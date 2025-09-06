@@ -1,1 +1,1 @@
-# quader-app
+# kuby-app
