@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>API.Kuby</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\App.Kuby\App.Kuby.csproj" />
+    <ProjectReference Include="..\Domain.Kuby\Domain.Kuby.csproj" />
+    <ProjectReference Include="..\Infrastructure.Kuby\Infrastructure.Kuby.csproj" />
+  </ItemGroup>
+
+</Project>

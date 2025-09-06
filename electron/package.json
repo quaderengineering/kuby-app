@@ -1,0 +1,59 @@
+{
+  "name": "electron",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.quaderengineering.quader",
+    "productName": "quader",
+    "files": [
+      "./**/*",
+      {
+        "from": "../quader-frontend/dist/quader-frontend/",
+        "to": "frontend",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "../quader-backend/publish/",
+        "to": "backend",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "extraResources": [
+      {
+        "from": "../quader-frontend/dist/quader-frontend/",
+        "to": "frontend",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "../quader-backend/publish/",
+        "to": "backend",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "electron": "^37.4.0",
+    "electron-builder": "^26.0.12"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
