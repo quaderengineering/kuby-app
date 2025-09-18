@@ -1,3 +1,6 @@
+using App.Kuby;
+using Infrastructure.Kuby;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +10,13 @@ builder.Services.AddOpenApi();
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Use traditional Controllers
+builder.Services.AddControllers();
+
+// Inject Layers
+builder.Services.AddInjectionApplication();
+builder.Services.AddInjectionInfrastructure();
 
 // Allow CORS for Angular dev
 builder.Services.AddCors(options =>
@@ -48,6 +58,8 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast");
+
+app.MapControllers();
 
 app.Run();
 

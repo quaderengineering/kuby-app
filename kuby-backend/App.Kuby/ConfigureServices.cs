@@ -1,0 +1,19 @@
+﻿using App.Kuby.UseCases.CubeBookings.Queries.GetById;
+using Mediator;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace App.Kuby;
+
+public static class ConfigureServices
+{
+    public static void AddInjectionApplication(this IServiceCollection services)
+    {
+        services.AddMediator(options =>
+        {
+            options.ServiceLifetime = ServiceLifetime.Scoped;
+        });
+
+        //FIXME: this is for testing purposes
+        services.AddScoped(typeof(IPipelineBehavior<GetCubeBookingQuery, CubeBookingReadResult>), typeof(GetCubeBookingQueryPreProcessor<GetCubeBookingQuery, CubeBookingReadResult>));
+    }
+}

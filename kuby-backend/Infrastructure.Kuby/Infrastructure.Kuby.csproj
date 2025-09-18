@@ -11,4 +11,9 @@
     <ProjectReference Include="..\Domain.Kuby\Domain.Kuby.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\EntitiesConfig\" />
+    <Folder Include="Data\Migrations\" />
+  </ItemGroup>
+
 </Project>

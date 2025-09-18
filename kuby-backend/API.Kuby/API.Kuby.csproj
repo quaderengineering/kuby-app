@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Mediator.Abstractions" Version="3.0.1" />
+    <PackageReference Include="Mediator.SourceGenerator" Version="3.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
   </ItemGroup>
@@ -16,6 +21,11 @@
     <ProjectReference Include="..\App.Kuby\App.Kuby.csproj" />
     <ProjectReference Include="..\Domain.Kuby\Domain.Kuby.csproj" />
     <ProjectReference Include="..\Infrastructure.Kuby\Infrastructure.Kuby.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Mapping\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>
