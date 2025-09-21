@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, globalShortcut } = require("electron");
 const path = require("path");
 const { spawn } = require("child_process");
 const express = require('express');
@@ -20,13 +20,22 @@ function createWindow() {
   // Load Angular build
   // mainWindow.loadFile(path.join(process.resourcesPath, "frontend", "./browser/index.html"));
   appServer.use(express.static(path.join(process.resourcesPath, "frontend", "./browser")));
+  // Always fallback to Angular index.html
+  appServer.use((req, res) => {
+    res.sendFile(path.join(process.resourcesPath, "frontend", "browser", "index.html"));
+  });
+
+
   appServer.listen(4200, () => console.log("Angular served inside Electron"));
 
   mainWindow.loadURL('http://localhost:4200');
 
-  //// FOR DEVELOPMENT ONLY
+  //// FIXME: FOR DEVELOPMENT ONLY
   mainWindow.webContents.openDevTools();
-  
+
+
+  mainWindow.setMenuBarVisibility(false);
+
   mainWindow.on("closed", () => {
     mainWindow = null;
     if (backendProcess) backendProcess.kill();

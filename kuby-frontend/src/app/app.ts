@@ -3,10 +3,11 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 import { Client, WeatherForecast } from './services/demo-service';
 import { Observable, of } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, CommonModule],
+  imports: [RouterOutlet, RouterLink, CommonModule, ButtonModule],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

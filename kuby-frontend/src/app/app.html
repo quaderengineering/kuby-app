@@ -7,8 +7,10 @@
 <!-- * * * * * * * to get started with your project! * * * * * * * -->
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
-<button (click)="getData()">Get demo data</button>
-<button (click)="removeData()">Remove demo data</button>
+<p-button (onClick)="getData()" label="Get demo data"/>
+<p-button (onClick)="removeData()" label="Remove demo data"/>
+
+<button pButton >asd</button>
 
 <p>{{demoData | async | json}}</p>
 
