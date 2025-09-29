@@ -1,4 +1,4 @@
-const { app, BrowserWindow, globalShortcut } = require("electron");
+const { app, BrowserWindow, globalShortcut, ipcMain } = require("electron");
 const path = require("path");
 const { spawn } = require("child_process");
 const express = require('express');
@@ -13,6 +13,7 @@ function createWindow() {
     width: 1200,
     height: 800,
     webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false
     },
   });
@@ -69,4 +70,9 @@ app.on("window-all-closed", () => {
 
 app.on("activate", () => {
   if (mainWindow === null) createWindow();
+});
+
+ipcMain.on("get-usb-data", (event) => {
+  const fakeData = { status: "ok", value: 42 };
+  event.sender.send("usb-data-response", fakeData);
 });

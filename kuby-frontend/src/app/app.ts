@@ -23,6 +23,11 @@ public demoData?: Observable<WeatherForecast[] | null>;
   }
 
   public removeData() {
-    this.demoData = of(null)
+    this.demoData = of(null);
+
+    (window as any).electron.send("get-usb-data");
+    (window as any).electron.receive("usb-data-response", (data: any) => {
+      console.log("USB data:", data);
+    });
   }
 }
