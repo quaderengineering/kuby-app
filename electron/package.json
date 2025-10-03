@@ -54,6 +54,8 @@
     "electron-builder": "^26.0.12"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "serialport": "^13.0.0",
+    "usb-detection": "^4.14.2"
   }
 }
