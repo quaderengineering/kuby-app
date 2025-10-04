@@ -1,4 +1,5 @@
 ﻿using App.Kuby.Interfaces.Repositories;
+using FluentValidation;
 using Mediator;
 
 namespace App.Kuby.UseCases.CubeBookings.Queries.GetById;
@@ -9,23 +10,17 @@ namespace App.Kuby.UseCases.CubeBookings.Queries.GetById;
 /// <typeparam name="TResponse"></typeparam>
 public class GetCubeBookingQueryPreProcessor<TMessage, TResponse> : IPipelineBehavior<TMessage, TResponse> where TMessage : GetCubeBookingQuery where TResponse : CubeBookingReadResult
 {
-    //public ValueTask<CubeBookingReadResult> Handle(
-    //    GetCubeBookingQuery message, 
-    //    MessageHandlerDelegate<GetCubeBookingQuery, CubeBookingReadResult> next, 
-    //    CancellationToken token)
-    //{
-    //    message.test = "testetstetste";
+    private readonly GetCubeBookingQueryValidator validator = new();
 
-    //    return next(message, token);
-    //}
-
-    public ValueTask<TResponse> Handle(
+    public async ValueTask<TResponse> Handle(
         TMessage message, 
         MessageHandlerDelegate<TMessage, TResponse> next, 
         CancellationToken token)
     {
         message.test = "testetstetste";
 
-        return next(message, token);
+        await validator.ValidateAndThrowAsync(message, token).ConfigureAwait(false); // FIXME: just for testing purposes, might not need validation here
+
+        return await next(message, token).ConfigureAwait(false);
     }
 }

@@ -1,7 +1,20 @@
+using API.Kuby.Exceptions;
 using App.Kuby;
 using Infrastructure.Kuby;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Exception Handling
+builder.Services.AddProblemDetails(config =>
+{
+    config.CustomizeProblemDetails = context =>
+    {
+        context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
+    };
+});
+
+builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -37,6 +50,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
 }
+
+app.UseExceptionHandler();
     
 app.UseCors("NgOrigins"); // Will only ever run locally, all good ;)
 
