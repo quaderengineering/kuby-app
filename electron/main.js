@@ -9,6 +9,7 @@ const appServer = express();
 
 let mainWindow;
 let backendProcess;
+let a;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -70,6 +71,7 @@ app.on("ready", async () => {
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     if (backendProcess) backendProcess.kill();
+    usbDetect.stopMonitoring();
     app.quit();
   }
 });
@@ -83,13 +85,14 @@ usbDetect.on("remove", async () => await refreshPorts());
 
 ipcMain.on("get-usb-data", (event) => {
   const fakeData = { status: "ok", value: 42 };
-  event.sender.send("usb-data-response", fakeData);
+  event.sender.send("usb-data-response", a);
 });
 
 async function refreshPorts() {
   const ports = await SerialPort.list();
-  console.log(
-    "Available ports:",
-    ports.map((p) => p.path)
-  );
+  // console.log(
+  //   "Available ports:",
+  //   ports.map((p) => p.path)
+  // );
+  a = ports;
 }

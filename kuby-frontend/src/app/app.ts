@@ -30,18 +30,19 @@ export class App implements OnInit {
         routerLink: '/dashboard',
       },
     ];
+
+    (window as any).electron.receive('usb-data-response', (data: any) => {
+      console.log('USB data:', data);
+    });
   }
 
   public getData() {
     this.demoData = this.demoService.getWeatherForecast();
   }
 
-  public removeData() {
+  public testIpc() {
     this.demoData = of(null);
 
     (window as any).electron.send('get-usb-data');
-    (window as any).electron.receive('usb-data-response', (data: any) => {
-      console.log('USB data:', data);
-    });
   }
 }
