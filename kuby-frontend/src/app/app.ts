@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { Client, WeatherForecast } from './services/demo-service';
 import { Observable, of } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -9,7 +9,7 @@ import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, CommonModule, ButtonModule, MenubarModule],
+  imports: [RouterOutlet, CommonModule, ButtonModule, MenubarModule],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

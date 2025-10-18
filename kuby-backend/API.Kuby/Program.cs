@@ -1,6 +1,8 @@
 using API.Kuby.Exceptions;
 using App.Kuby;
 using Infrastructure.Kuby;
+using Infrastructure.Kuby.Data.EntitiesConfig;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +31,7 @@ builder.Services.AddControllers();
 
 // Inject Layers
 builder.Services.AddInjectionApplication();
-builder.Services.AddInjectionInfrastructure();
+builder.Services.AddInjectionInfrastructure(); // Db Config is here as well
 
 // Allow CORS for Angular dev
 builder.Services.AddCors(options =>
@@ -73,6 +75,13 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast");
+
+// Apply migrations on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+    db.Database.Migrate();
+}
 
 app.MapControllers();
 
