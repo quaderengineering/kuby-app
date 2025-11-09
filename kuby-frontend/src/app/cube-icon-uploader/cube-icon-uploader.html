@@ -1,1 +1,84 @@
-<p>cube-icon-uploader works!</p>
+@for (cubeConfig of cubeConfigModels(); track $index) {
+<p-card class="card">
+  <ng-template #header>
+    @if (cubeConfig.icon) {
+    <img [src]="'data:image/bmp;base64,' + cubeConfig.icon" />
+    }
+  </ng-template>
+  <ng-template #title> Würfel Seite Nr. {{ cubeConfig.displayId }} </ng-template>
+  <div class="card-body">
+    <p-floatlabel variant="on" class="description">
+      <input
+        pInputText
+        id="description-{{ cubeConfig.displayId }}"
+        [(ngModel)]="cubeConfig.description"
+      />
+      <label for="description-{{ cubeConfig.displayId }}">Beschreibung</label>
+    </p-floatlabel>
+    <div class="radio-container">
+      <div class="radio-button">
+        <p-radiobutton
+          inputId="{{ DisplayMode.STOPWATCH.toString() }}-{{ cubeConfig.displayId }}"
+          name="Mode"
+          [value]="DisplayMode.STOPWATCH"
+          [(ngModel)]="cubeConfig.mode"
+        />
+        <label for="{{ DisplayMode.STOPWATCH.toString() }}-{{ cubeConfig.displayId }}"
+          >Stoppuhr</label
+        >
+      </div>
+      <div class="radio-button">
+        <p-radiobutton
+          inputId="{{ DisplayMode.TIMER.toString() }}-{{ cubeConfig.displayId }}"
+          name="Mode"
+          [value]="DisplayMode.TIMER"
+          [(ngModel)]="cubeConfig.mode"
+        />
+        <label for="{{ DisplayMode.TIMER.toString() }}-{{ cubeConfig.displayId }}">Timer</label>
+      </div>
+    </div>
+    @if (cubeConfig.mode === DisplayMode.TIMER) {
+    <p-floatlabel variant="on">
+      <p-inputnumber
+        inputId="hours-{{ cubeConfig.displayId }}"
+        suffix=" h"
+        [(ngModel)]="cubeConfig.hours"
+        [min]="0"
+        [max]="23"
+      />
+      <label for="hours-{{ cubeConfig.displayId }}"> Stunden </label>
+    </p-floatlabel>
+    <p-floatlabel variant="on">
+      <p-inputnumber
+        inputId="minutes-{{ cubeConfig.displayId }}"
+        suffix=" m"
+        [(ngModel)]="cubeConfig.minutes"
+        [min]="0"
+        [max]="59"
+      />
+      <label for="minutes-{{ cubeConfig.displayId }}"> Minuten </label>
+    </p-floatlabel>
+    <p-floatlabel variant="on">
+      <p-inputnumber
+        inputId="seconds-{{ cubeConfig.displayId }}"
+        suffix=" s"
+        [(ngModel)]="cubeConfig.seconds"
+        [min]="0"
+        [max]="59"
+      />
+      <label for="seconds-{{ cubeConfig.displayId }}"> Sekunden </label>
+    </p-floatlabel>
+    }
+    <p-fileupload
+      mode="basic"
+      chooseIcon="pi pi-upload"
+      accept="image/*"
+      maxFileSize="1000000"
+      customUpload="true"
+      (uploadHandler)="uploadIcon($event, cubeConfig.displayId)"
+      [auto]="true"
+      chooseLabel="Auswählen"
+    />
+  </div>
+</p-card>
+}

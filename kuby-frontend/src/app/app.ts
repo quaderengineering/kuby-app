@@ -32,7 +32,7 @@ export class App implements OnInit {
       { label: 'Upload', icon: 'pi pi-upload', routerLink: '/upload' },
     ];
 
-    (window as any).electron.receive('usb-data-response', (data: any) => {
+    (window as any).electron?.receive('usb-data-response', (data: any) => {
       console.log('USB data:', data);
     });
   }

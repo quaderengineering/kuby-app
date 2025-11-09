@@ -1,0 +1,26 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.card-body {
+  display: flex;
+  overflow: auto;
+  gap: 1rem;
+  flex-direction: column;
+}
+
+.description {
+  margin-top: 1rem;
+}
+
+.radio-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.radio-button {
+  display: flex;
+  gap: 0.5rem;
+}
