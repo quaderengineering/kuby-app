@@ -1,8 +1,9 @@
 const { app, BrowserWindow, globalShortcut, ipcMain } = require("electron");
-const path = require("path");
 const { spawn } = require("child_process");
-const express = require("express");
 const { SerialPort } = require("serialport");
+const { ReadlineParser } = require("@serialport/parser-readline");
+const path = require("path");
+const express = require("express");
 const usbDetect = require("usb-detection");
 
 const appServer = express();
@@ -47,6 +48,116 @@ function createWindow() {
   });
 }
 
+async function findPicoSerial() {
+  const ports = await SerialPort.list();
+
+  for (const port of ports) {
+    try {
+      const serialPort = new SerialPort({
+        path: port.path,
+        baudRate: 115200,
+        autoOpen: true,
+      });
+
+      const parser = serialPort.pipe(new ReadlineParser({ delimiter: "\n" }));
+
+      const pingPromise = new Promise((resolve, reject) => {
+        let found = false;
+        parser.once("data", (line) => {
+          if (line.trim() === "PICO") {
+            found = true;
+            resolve(port.path);
+          } else {
+            reject();
+          }
+          serialPort.close();
+        });
+
+        // Send PING after small delay
+        setTimeout(() => {
+          serialPort.write("PING\n", (err) => {
+            if (err) reject(err);
+          });
+        }, 100);
+
+        // Timeout after 1s
+        setTimeout(() => {
+          if (!found) {
+            parser.removeAllListeners("data");
+            serialPort.close();
+            reject();
+          }
+        }, 1000);
+      });
+
+      const result = await pingPromise;
+      if (result) return result;
+    } catch {
+      // continue to next port
+    }
+  }
+
+  return null;
+}
+
+async function getTimers() {
+  const picoPort = await findPicoSerial();
+  if (!picoPort) throw new Error("Pico not detected");
+
+  return new Promise((resolve, reject) => {
+    const serialPort = new SerialPort({ path: picoPort, baudRate: 115200 });
+    const parser = serialPort.pipe(new ReadlineParser({ delimiter: "\n" }));
+
+    parser.once("data", (line) => {
+      try {
+        const json = JSON.parse(line.trim());
+        serialPort.close();
+        resolve(json);
+      } catch (err) {
+        reject(err);
+      }
+    });
+
+    serialPort.write("GET_TIMERS\n", (err) => {
+      if (err) reject(err);
+    });
+  });
+}
+
+async function setTimers(timers) {
+  const picoPort = await findPicoSerial();
+  if (!picoPort) throw new Error("Pico not detected");
+
+  return new Promise((resolve, reject) => {
+    const serialPort = new SerialPort({ path: picoPort, baudRate: 115200 });
+    const parser = serialPort.pipe(new ReadlineParser({ delimiter: "\n" }));
+
+    parser.once("data", (line) => {
+      if (line.trim() === "OK") {
+        serialPort.close();
+        resolve(true);
+      } else {
+        serialPort.close();
+        reject(new Error("Error setting timers: " + line));
+      }
+    });
+
+    const cmd = `SET_TIMERS ${JSON.stringify(timers)}\n`;
+    serialPort.write(cmd, (err) => {
+      if (err) reject(err);
+    });
+  });
+}
+
+async function refreshPorts() {
+  const ports = await SerialPort.list();
+  // console.log(
+  //   "Available ports:",
+  //   ports.map((p) => p.path)
+  // );
+  a = ports;
+}
+
 app.on("ready", async () => {
   // Start .NET API
   apiPath = path.join(process.resourcesPath, "backend", "quader-backend.exe");
@@ -88,11 +199,20 @@ ipcMain.on("get-usb-data", (event) => {
   event.sender.send("usb-data-response", a);
 });
 
-async function refreshPorts() {
-  const ports = await SerialPort.list();
-  // console.log(
-  //   "Available ports:",
-  //   ports.map((p) => p.path)
-  // );
-  a = ports;
-}
+ipcMain.handle("pico-get-timers", async () => {
+  try {
+    const timers = await getTimers();
+    return { success: true, data: timers };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle("pico-set-timers", async (_, timers) => {
+  try {
+    await setTimers(timers);
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+});
