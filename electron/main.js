@@ -10,7 +10,7 @@ const appServer = express();
 
 let mainWindow;
 let backendProcess;
-let a;
+let a; //FIXME: wth is this name
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -160,7 +160,7 @@ async function refreshPorts() {
 
 app.on("ready", async () => {
   // Start .NET API
-  apiPath = path.join(process.resourcesPath, "backend", "quader-backend.exe");
+  apiPath = path.join(process.resourcesPath, "backend", "API.Kuby.exe");
 
   backendProcess = spawn(apiPath, [], { cwd: path.dirname(apiPath) });
 
@@ -193,11 +193,6 @@ app.on("activate", () => {
 
 usbDetect.on("add", async () => await refreshPorts());
 usbDetect.on("remove", async () => await refreshPorts());
-
-ipcMain.on("get-usb-data", (event) => {
-  const fakeData = { status: "ok", value: 42 };
-  event.sender.send("usb-data-response", a);
-});
 
 ipcMain.handle("pico-get-timers", async () => {
   try {
