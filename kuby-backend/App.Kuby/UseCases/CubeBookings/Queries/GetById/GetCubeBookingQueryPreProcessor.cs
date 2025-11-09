@@ -1,5 +1,4 @@
-﻿using App.Kuby.Interfaces.Repositories;
-using FluentValidation;
+﻿using FluentValidation;
 using Mediator;
 
 namespace App.Kuby.UseCases.CubeBookings.Queries.GetById;

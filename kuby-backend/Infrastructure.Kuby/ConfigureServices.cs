@@ -1,6 +1,8 @@
 ﻿using App.Kuby.Interfaces.Repositories;
+using App.Kuby.Interfaces.Services;
 using Infrastructure.Kuby.Data.EntitiesConfig;
 using Infrastructure.Kuby.Repositories.EF;
+using Infrastructure.Kuby.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +12,9 @@ public static class ConfigureServices
 {
     public static void AddInjectionInfrastructure(this IServiceCollection services)
     {
+        // Services
+        services.AddScoped<IIconTransformationService, IconTransformationService>();
+
         // Repositories
         services.AddScoped<ICubeBookingRepository, CubeBookingRepository>();
 

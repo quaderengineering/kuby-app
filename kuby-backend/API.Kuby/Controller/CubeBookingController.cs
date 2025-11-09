@@ -3,6 +3,7 @@ using Mediator;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using SixLabors.ImageSharp;
 
 namespace API.Kuby.Controller;
 
@@ -24,7 +25,7 @@ public class CubeBookingController : ControllerBase
     //}
 
     [HttpGet("{cubeBookingId:int}")]
-    public async Task<ActionResult> GetAsync([FromRoute, BindRequired] int cubeBookingId, CancellationToken token)
+    public async Task<ActionResult<int>> GetAsync([FromRoute, BindRequired] int cubeBookingId, CancellationToken token)
     {
         var query = new GetCubeBookingQuery(cubeBookingId);
         var result = await _mediator.Send<CubeBookingReadResult>(query);

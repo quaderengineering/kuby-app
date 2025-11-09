@@ -19,6 +19,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="9.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,7 +31,6 @@
   <ItemGroup>
     <Folder Include="Extensions\" />
     <Folder Include="Mapping\" />
-    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>
