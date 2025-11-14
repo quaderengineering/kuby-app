@@ -1,5 +1,4 @@
-﻿using API.Kuby.Models.Icon;
-using App.Kuby.UseCases.Icons.Commands.Process;
+﻿using App.Kuby.UseCases.Icons.Commands.Process;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Filters;
@@ -18,13 +17,13 @@ public class IconController : ControllerBase
     }
 
     [HttpPost("process")]
-    [SwaggerResponseHeader(StatusCodes.Status201Created, "icons transformed", nameof(List<string>), "")]
-    public async Task<ActionResult<List<string>>> ProcessIconsAsync([FromForm] IFormFileCollection files)
+    [SwaggerResponseHeader(StatusCodes.Status201Created, "icons transformed", "string", "")]
+    public async Task<ActionResult<string>> ProcessIconsAsync([FromForm] IFormFileCollection files)
     {
         var iconFiles = files.Select(f => new IconFile(f.FileName, f.OpenReadStream())).ToList();
         var command = new ProcessIconsCommand(iconFiles);
 
-        var result = await _mediator.Send<IReadOnlyCollection<string>>(command);
+        var result = await _mediator.Send<string>(command);
 
         return Ok(result);
     }

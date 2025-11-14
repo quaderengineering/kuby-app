@@ -30,7 +30,7 @@ export class CubeBookingClient {
     /**
      * @return OK
      */
-    cubes(cubeBookingId: number): Observable<void> {
+    cubes(cubeBookingId: number): Observable<number> {
         let url_ = this.baseUrl + "/api/cubes/{cubeBookingId}";
         if (cubeBookingId === undefined || cubeBookingId === null)
             throw new globalThis.Error("The parameter 'cubeBookingId' must be defined.");
@@ -41,6 +41,7 @@ export class CubeBookingClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -51,14 +52,14 @@ export class CubeBookingClient {
                 try {
                     return this.processCubes(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<number>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<number>;
         }));
     }
 
-    protected processCubes(response: HttpResponseBase): Observable<void> {
+    protected processCubes(response: HttpResponseBase): Observable<number> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -67,7 +68,9 @@ export class CubeBookingClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as number;
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -95,7 +98,7 @@ export class IconClient {
      * @param files (optional) 
      * @return OK
      */
-    process(files: FileParameter[] | undefined): Observable<string[]> {
+    process(files: FileParameter[] | undefined): Observable<string> {
         let url_ = this.baseUrl + "/api/icons/process";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -121,14 +124,14 @@ export class IconClient {
                 try {
                     return this.processProcess(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<string[]>;
+                    return _observableThrow(e) as any as Observable<string>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<string[]>;
+                return _observableThrow(response_) as any as Observable<string>;
         }));
     }
 
-    protected processProcess(response: HttpResponseBase): Observable<string[]> {
+    protected processProcess(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -138,7 +141,7 @@ export class IconClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as string[];
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as string;
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {

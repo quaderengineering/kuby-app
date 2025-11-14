@@ -1,5 +1,4 @@
 ﻿using App.Kuby.UseCases.CubeBookings.Queries.GetById;
-using Domain.Kuby.Models;
 
 namespace App.Kuby.Interfaces.Repositories;
 

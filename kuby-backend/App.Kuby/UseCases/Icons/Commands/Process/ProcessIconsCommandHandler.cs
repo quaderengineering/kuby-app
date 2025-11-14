@@ -3,7 +3,7 @@ using Mediator;
 
 namespace App.Kuby.UseCases.Icons.Commands.Process;
 
-public class ProcessIconsCommandHandler : IRequestHandler<ProcessIconsCommand, IReadOnlyCollection<string>>
+public class ProcessIconsCommandHandler : IRequestHandler<ProcessIconsCommand, string>
 {
     private readonly IIconTransformationService _iconTransformationService;
 
@@ -12,7 +12,7 @@ public class ProcessIconsCommandHandler : IRequestHandler<ProcessIconsCommand, I
         _iconTransformationService = iconTransformationService;
     }
 
-    public ValueTask<IReadOnlyCollection<string>> Handle(ProcessIconsCommand request, CancellationToken cancellationToken)
+    public ValueTask<string> Handle(ProcessIconsCommand request, CancellationToken cancellationToken)
     {
         return ValueTask.FromResult(_iconTransformationService.TransformIcons(request.IconFiles));
     }

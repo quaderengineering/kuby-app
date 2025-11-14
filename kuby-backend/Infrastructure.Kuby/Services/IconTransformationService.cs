@@ -1,29 +1,28 @@
 ﻿using App.Kuby.Interfaces.Services;
 using App.Kuby.UseCases.Icons.Commands.Process;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
 namespace Infrastructure.Kuby.Services;
 
 public class IconTransformationService : IIconTransformationService
 {
-    public IReadOnlyCollection<string> TransformIcons(IReadOnlyCollection<IconFile> iconFiles)
+    public string TransformIcons(IReadOnlyCollection<IconFile> iconFiles) //FIXME
     {
-        var base64Strings = new List<string>();
-        foreach (var file in iconFiles)
-        {
-            using var img = Image.Load(file.Stream);
+        using var img = Image.Load<Rgba32>(iconFiles.First().Stream); //FIXME
 
-            img.Mutate(x => x.Resize(240, 240).Grayscale());
+        // Resize to 240x240
+        img.Mutate(x => x.Resize(240, 240));
 
-            // Convert to byte array (or 1-bit bitmap)
-            using var output = new MemoryStream();
-            img.SaveAsBmp(output);
-            var bytes = output.ToArray();
+        // Remove alpha by converting to RGB24 (drops the A channel)
+        using var rgbImage = img.CloneAs<Rgb24>();
 
-            base64Strings.Add(Convert.ToBase64String(bytes));
-        }
+        // Save as 24-bit BMP
+        using var output = new MemoryStream();
+        rgbImage.SaveAsBmp(output);
+        var bytes = output.ToArray();
 
-       return base64Strings;
+        return Convert.ToBase64String(bytes);
     }
 }

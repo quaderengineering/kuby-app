@@ -211,3 +211,13 @@ ipcMain.handle("pico-set-timers", async (_, timers) => {
     return { success: false, error: err.message };
   }
 });
+
+ipcMain.handle("cube-upload", (event, base64) => {
+  const buffer = Buffer.from(base64, "base64"); //Converts it to BMP based code
+  // const port = new SerialPort({ path: 'COM3', baudRate: 115200 });
+  return buffer.toString();
+  // port.write(buffer, (err) => {
+  //   if (err) console.error('Error sending to cube:', err);
+  //   else console.log('Sent icon to cube successfully!');
+  // });
+});

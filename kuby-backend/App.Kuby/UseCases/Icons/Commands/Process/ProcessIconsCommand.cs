@@ -2,4 +2,4 @@
 
 namespace App.Kuby.UseCases.Icons.Commands.Process;
 
-public record ProcessIconsCommand(IReadOnlyCollection<IconFile> IconFiles) : IRequest<IReadOnlyCollection<string>>;
+public record ProcessIconsCommand(IReadOnlyCollection<IconFile> IconFiles) : IRequest<string>;
