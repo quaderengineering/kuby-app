@@ -1,8 +1,9 @@
 export interface CubeConfigModel {
   displayId: number;
   mode: DisplayMode;
-  time: Date;
-  icon: string;
+  time?: Date;
+  iconByteArray?: string;
+  iconForPreview?: string;
   description: string;
   hours: number;
   minutes: number;

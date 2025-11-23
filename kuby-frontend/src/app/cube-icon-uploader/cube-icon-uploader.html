@@ -1,96 +1,137 @@
-@for (cubeConfig of cubeConfigModels(); track $index) {
-<p-card class="card">
-  @if ($index !== 5) {
-  <ng-template #header>
-    @if (cubeConfig.icon) {
-    <img [src]="'data:image/bmp;base64,' + cubeConfig.icon" />
-    }
-  </ng-template>
-  }
-  <ng-template #title>
-    <span pTooltip="Ohne Bild" [tooltipDisabled]="$index !== 5">
-      Würfel Seite Nr. {{ cubeConfig.displayId }}
-    </span>
-  </ng-template>
-  <div class="card-body">
-    <p-floatlabel variant="on" class="description">
-      <input
-        pInputText
-        id="description-{{ cubeConfig.displayId }}"
-        [(ngModel)]="cubeConfig.description"
+<p-button
+  class="upload-button"
+  label="Hochladen"
+  [disabled]="!hasCubeConfigModelsChanged()"
+  (click)="saveCubeConfig()"
+/>
+<div class="cards">
+  @for (cubeConfig of cubeConfigModels(); track $index) {
+  <p-card class="card">
+    @if ($index !== 5) {
+    <ng-template #header>
+      @if (cubeConfig.iconForPreview) {
+      <p-button
+        class="remove-img-button"
+        icon="pi pi-times"
+        [text]="true"
+        (onClick)="onRemoveImage($index)"
       />
-      <label for="description-{{ cubeConfig.displayId }}">Beschreibung</label>
-    </p-floatlabel>
-    <div class="radio-container">
-      <div class="radio-button">
-        <p-radiobutton
-          inputId="{{ DisplayMode.STOPWATCH.toString() }}-{{ cubeConfig.displayId }}"
-          name="Mode"
-          [value]="DisplayMode.STOPWATCH"
-          [(ngModel)]="cubeConfig.mode"
-        />
-        <label for="{{ DisplayMode.STOPWATCH.toString() }}-{{ cubeConfig.displayId }}"
-          >Stoppuhr</label
-        >
-      </div>
-      <div class="radio-button">
-        <p-radiobutton
-          inputId="{{ DisplayMode.TIMER.toString() }}-{{ cubeConfig.displayId }}"
-          name="Mode"
-          [value]="DisplayMode.TIMER"
-          [(ngModel)]="cubeConfig.mode"
-        />
-        <label for="{{ DisplayMode.TIMER.toString() }}-{{ cubeConfig.displayId }}">Timer</label>
-      </div>
-    </div>
-    @if (cubeConfig.mode === DisplayMode.TIMER) {
-    <div class="timer-container">
-      <p-floatlabel variant="on">
-        <p-inputnumber
-          inputId="hours-{{ cubeConfig.displayId }}"
-          suffix=" h"
-          [(ngModel)]="cubeConfig.hours"
-          [min]="0"
-          [max]="23"
-          [inputSize]="1"
-        />
-        <label for="hours-{{ cubeConfig.displayId }}"> Stunden </label>
-      </p-floatlabel>
-      <p-floatlabel variant="on">
-        <p-inputnumber
-          inputId="minutes-{{ cubeConfig.displayId }}"
-          suffix=" m"
-          [(ngModel)]="cubeConfig.minutes"
-          [min]="0"
-          [max]="59"
-          [inputSize]="1"
-        />
-        <label for="minutes-{{ cubeConfig.displayId }}"> Minuten </label>
-      </p-floatlabel>
-      <p-floatlabel variant="on">
-        <p-inputnumber
-          inputId="seconds-{{ cubeConfig.displayId }}"
-          suffix=" s"
-          [(ngModel)]="cubeConfig.seconds"
-          [min]="0"
-          [max]="59"
-          [inputSize]="1"
-        />
-        <label for="seconds-{{ cubeConfig.displayId }}"> Sekunden </label>
-      </p-floatlabel>
-    </div>
-    } @if ($index !== 5) {
-    <p-fileupload
-      mode="basic"
-      chooseIcon="pi pi-upload"
-      accept="image/*"
-      maxFileSize="1000000"
-      customUpload="true"
-      (uploadHandler)="uploadIcon($event, cubeConfig.displayId)"
-      [auto]="true"
-      chooseLabel="Auswählen"
-    />
+      <img [src]="'data:image/bmp;base64,' + cubeConfig.iconForPreview" />
+      }
+    </ng-template>
     }
+    <ng-template #title>
+      <span pTooltip="Ohne Bild" [tooltipDisabled]="$index !== 5">
+        Würfel Seite Nr. {{ cubeConfig.displayId }}
+      </span>
+    </ng-template>
+    <div class="card-body">
+      <p-floatlabel variant="on" class="description">
+        <input
+          pInputText
+          size="19"
+          id="description-{{ cubeConfig.displayId }}"
+          [ngModel]="cubeConfig.description"
+          (ngModelChange)="onDescriptionChange($event, $index)"
+        />
+        <label for="description-{{ cubeConfig.displayId }}">Beschreibung</label>
+      </p-floatlabel>
+      <div class="radio-container">
+        <div class="radio-button">
+          <p-radiobutton
+            inputId="{{ DisplayMode.STOPWATCH.toString() }}-{{ cubeConfig.displayId }}"
+            name="Mode"
+            [value]="DisplayMode.STOPWATCH"
+            [ngModel]="cubeConfig.mode"
+            (ngModelChange)="onModeChange($event, $index)"
+          />
+          <label for="{{ DisplayMode.STOPWATCH.toString() }}-{{ cubeConfig.displayId }}"
+            >Stoppuhr</label
+          >
+        </div>
+        <div class="radio-button">
+          <p-radiobutton
+            inputId="{{ DisplayMode.TIMER.toString() }}-{{ cubeConfig.displayId }}"
+            name="Mode"
+            [value]="DisplayMode.TIMER"
+            [ngModel]="cubeConfig.mode"
+            (ngModelChange)="onModeChange($event, $index)"
+          />
+          <label for="{{ DisplayMode.TIMER.toString() }}-{{ cubeConfig.displayId }}">Timer</label>
+        </div>
+      </div>
+      @if (cubeConfig.mode === DisplayMode.TIMER) {
+      <div class="timer-container">
+        <p-floatlabel variant="on">
+          <p-inputnumber
+            inputId="hours-{{ cubeConfig.displayId }}"
+            [min]="0"
+            [max]="23"
+            [inputSize]="1"
+            [ngModel]="cubeConfig.hours"
+            (ngModelChange)="onHoursChange($event, $index)"
+          />
+          <label for="hours-{{ cubeConfig.displayId }}"> Stunden </label>
+        </p-floatlabel>
+        <p-floatlabel variant="on">
+          <p-inputnumber
+            inputId="minutes-{{ cubeConfig.displayId }}"
+            [min]="0"
+            [max]="59"
+            [inputSize]="1"
+            [ngModel]="cubeConfig.minutes"
+            (ngModelChange)="onMinutesChange($event, $index)"
+          />
+          <label for="minutes-{{ cubeConfig.displayId }}"> Minuten </label>
+        </p-floatlabel>
+        <p-floatlabel variant="on">
+          <p-inputnumber
+            inputId="seconds-{{ cubeConfig.displayId }}"
+            [min]="0"
+            [max]="59"
+            [inputSize]="1"
+            [ngModel]="cubeConfig.seconds"
+            (ngModelChange)="onSecondsChange($event, $index)"
+          />
+          <label for="seconds-{{ cubeConfig.displayId }}"> Sekunden </label>
+        </p-floatlabel>
+      </div>
+      } @if ($index !== 5) {
+      <p-fileupload
+        mode="basic"
+        chooseIcon="pi pi-upload"
+        [accept]="fileTypes"
+        maxFileSize="1000000"
+        customUpload="true"
+        (uploadHandler)="fileChangeEvent($event, cubeConfig.displayId)"
+        [auto]="true"
+        chooseLabel="Auswählen"
+      />
+      }
+    </div>
+  </p-card>
+  }
+</div>
+
+<p-dialog
+  header="Bild zuschneiden"
+  [modal]="true"
+  [visible]="isDialogVisible()"
+  (visibleChange)="onVisibleChange($event)"
+  [resizable]="false"
+  [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+>
+  <image-cropper
+    [imageFile]="imageFile()"
+    [maintainAspectRatio]="true"
+    [aspectRatio]="1 / 1"
+    format="png"
+    (imageCropped)="onImageCropped($event)"
+  ></image-cropper>
+
+  <div class="dialog-actions">
+    <p-button label="Abbrechen" severity="secondary" (click)="onCancelCropper()" />
+    <p-button label="Zuschneiden" (click)="uploadIcon()" />
   </div>
-</p-card>
-}
+</p-dialog>

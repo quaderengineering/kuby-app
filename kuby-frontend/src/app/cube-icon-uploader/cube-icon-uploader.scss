@@ -1,9 +1,24 @@
-:host {
+.cards {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
+}
+
+.card {
+  width: 240px;
+}
+
+.remove-img-button {
+  position: absolute;
+  z-index: 10;
+}
+
+.upload-button {
+  display: block;
+  justify-self: end;
+  margin: 1rem;
 }
 
 .card-body {
@@ -30,4 +45,11 @@
 .timer-container {
   display: flex;
   column-gap: 0.5rem;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
 }
