@@ -1,1 +1,46 @@
-<p>dashboard works!</p>
+<!-- @for (time of (timeModels$ | async); track $index) { {{ time | json }} <br />
+<br />
+} -->
+
+@if ((timeModels$ | async); as timeModels) {
+<p-table
+  [value]="timeModels"
+  dataKey="label"
+  sortMode="single"
+  rowGroupMode="subheader"
+  groupRowsBy="label"
+  [tableStyle]="{ 'min-width': '70rem' }"
+>
+  <ng-template #header>
+    <tr>
+      <th>Label</th>
+      <th>Von</th>
+      <th>Bis</th>
+      <th>Dauer</th>
+    </tr>
+  </ng-template>
+  <ng-template #groupheader let-timeModel let-rowIndex="rowIndex" let-expanded="expanded">
+    <tr>
+      <td colspan="3">
+        <button
+          type="button"
+          pButton
+          pRipple
+          [pRowToggler]="timeModel"
+          text
+          rounded
+          plain
+          class="mr-2"
+          [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+        ></button>
+        <span class="font-bold ml-2">{{ timeModel.label }}</span>
+      </td>
+      <td>
+        <span>
+          {{ timeModel.duration | date : 'hh:mm' }}
+        </span>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+}
