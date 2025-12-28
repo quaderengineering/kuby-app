@@ -26,7 +26,6 @@ internal sealed class GlobalExceptionHandler(
         await httpContext
             .Response
             .WriteAsJsonAsync(problemDetails, token);
-
         return true;
     }
 }

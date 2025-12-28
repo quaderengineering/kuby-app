@@ -4,112 +4,143 @@
   [disabled]="!hasCubeConfigModelsChanged()"
   (click)="saveCubeConfig()"
 />
-<div class="cards">
-  @for (cubeConfig of cubeConfigModels(); track $index) {
-  <p-card class="card">
-    @if ($index !== 5) {
-    <ng-template #header>
-      @if (cubeConfig.iconForPreview) {
+
+<div class="cube-config-editor-container">
+  <div class="buttons-divider-wrapper">
+    <div class="card-selection-buttons">
+      @for (cubeConfigs of cubeConfigModels(); track $index) {
       <p-button
-        class="remove-img-button"
-        icon="pi pi-times"
-        [text]="true"
-        (onClick)="onRemoveImage($index)"
-      />
-      <img [src]="'data:image/bmp;base64,' + cubeConfig.iconForPreview" />
-      }
-    </ng-template>
-    }
-    <ng-template #title>
-      <span pTooltip="Ohne Bild" [tooltipDisabled]="$index !== 5">
-        Würfel Seite Nr. {{ cubeConfig.displayId }}
-      </span>
-    </ng-template>
-    <div class="card-body">
-      <p-floatlabel variant="on" class="description">
-        <input
-          pInputText
-          size="19"
-          id="description-{{ cubeConfig.displayId }}"
-          [ngModel]="cubeConfig.description"
-          (ngModelChange)="onDescriptionChange($event, $index)"
-        />
-        <label for="description-{{ cubeConfig.displayId }}">Beschreibung</label>
-      </p-floatlabel>
-      <div class="radio-container">
-        <div class="radio-button">
-          <p-radiobutton
-            inputId="{{ DisplayMode.STOPWATCH.toString() }}-{{ cubeConfig.displayId }}"
-            name="Mode"
-            [value]="DisplayMode.STOPWATCH"
-            [ngModel]="cubeConfig.mode"
-            (ngModelChange)="onModeChange($event, $index)"
-          />
-          <label for="{{ DisplayMode.STOPWATCH.toString() }}-{{ cubeConfig.displayId }}"
-            >Stoppuhr</label
-          >
-        </div>
-        <div class="radio-button">
-          <p-radiobutton
-            inputId="{{ DisplayMode.TIMER.toString() }}-{{ cubeConfig.displayId }}"
-            name="Mode"
-            [value]="DisplayMode.TIMER"
-            [ngModel]="cubeConfig.mode"
-            (ngModelChange)="onModeChange($event, $index)"
-          />
-          <label for="{{ DisplayMode.TIMER.toString() }}-{{ cubeConfig.displayId }}">Timer</label>
-        </div>
-      </div>
-      @if (cubeConfig.mode === DisplayMode.TIMER) {
-      <div class="timer-container">
-        <p-floatlabel variant="on">
-          <p-inputnumber
-            inputId="hours-{{ cubeConfig.displayId }}"
-            [min]="0"
-            [max]="23"
-            [inputSize]="1"
-            [ngModel]="cubeConfig.hours"
-            (ngModelChange)="onHoursChange($event, $index)"
-          />
-          <label for="hours-{{ cubeConfig.displayId }}"> Stunden </label>
-        </p-floatlabel>
-        <p-floatlabel variant="on">
-          <p-inputnumber
-            inputId="minutes-{{ cubeConfig.displayId }}"
-            [min]="0"
-            [max]="59"
-            [inputSize]="1"
-            [ngModel]="cubeConfig.minutes"
-            (ngModelChange)="onMinutesChange($event, $index)"
-          />
-          <label for="minutes-{{ cubeConfig.displayId }}"> Minuten </label>
-        </p-floatlabel>
-        <p-floatlabel variant="on">
-          <p-inputnumber
-            inputId="seconds-{{ cubeConfig.displayId }}"
-            [min]="0"
-            [max]="59"
-            [inputSize]="1"
-            [ngModel]="cubeConfig.seconds"
-            (ngModelChange)="onSecondsChange($event, $index)"
-          />
-          <label for="seconds-{{ cubeConfig.displayId }}"> Sekunden </label>
-        </p-floatlabel>
-      </div>
-      } @if ($index !== 5) {
-      <p-fileupload
-        mode="basic"
-        chooseIcon="pi pi-upload"
-        [accept]="fileTypes"
-        maxFileSize="1000000"
-        customUpload="true"
-        (uploadHandler)="fileChangeEvent($event, cubeConfig.displayId)"
-        [auto]="true"
-        chooseLabel="Auswählen"
+        label="Seite {{ cubeConfigs.displayId }}"
+        [severity]="selectedCubeSideIndex() === $index ? 'primary' : 'secondary'"
+        (onClick)="onSelectedCubeSideChanged($index)"
       />
       }
+      <!--<p-button
+        label="3D-Ansicht"
+        [severity]="show3dView() ? 'primary' : 'secondary'"
+        (onClick)="onToggle3dView()"
+      />-->
+      <p-button
+        label="Details aller Seiten"
+        [severity]="showDrawer() ? 'primary' : 'secondary'"
+        (onClick)="onToggleShowDrawer()"
+      />
     </div>
-  </p-card>
+    <p-divider layout="vertical"></p-divider>
+  </div>
+  @if (show3dView()) {
+  <div class="cube-container">
+    <div class="cube">
+      <div class="face front">
+        <img [src]="'data:image/bmp;base64,' + cubeConfigModels()[0].iconForPreview" />
+      </div>
+      <div class="face back">
+        <img [src]="'data:image/bmp;base64,' + cubeConfigModels()[1].iconForPreview" />
+      </div>
+      <div class="face right">
+        <img [src]="'data:image/bmp;base64,' + cubeConfigModels()[2].iconForPreview" />
+      </div>
+      <div class="face left">
+        <img [src]="'data:image/bmp;base64,' + cubeConfigModels()[3].iconForPreview" />
+      </div>
+      <div class="face top">
+        <img [src]="'data:image/bmp;base64,' + cubeConfigModels()[4].iconForPreview" />
+      </div>
+      <div class="face bottom">
+        <h3>Pause</h3>
+      </div>
+    </div>
+  </div>
+  } @let currentCubeConfig = cubeConfigModels()[selectedCubeSideIndex()]; @if(currentCubeConfig) {
+  <div class="form-wrapper">
+    <form class="cube-config-form">
+      <div class="form-body">
+        <p-floatlabel variant="on" class="description">
+          <input
+            pInputText
+            placeholder="E-Mails lesen"
+            id="description-{{ currentCubeConfig.displayId }}"
+            name="description"
+            [ngModel]="currentCubeConfig.description"
+            (ngModelChange)="onDescriptionChange($event, currentCubeConfig.displayId)"
+          />
+          <label for="description-{{ currentCubeConfig.displayId }}">Bezeichnung</label>
+        </p-floatlabel>
+        <p-selectbutton
+          id="mode"
+          [options]="cubeModes"
+          [ngModel]="currentCubeConfig.mode"
+          (ngModelChange)="onModeChange($event, currentCubeConfig.displayId)"
+          optionLabel="label"
+          optionValue="value"
+          name="modes"
+        />
+        @if (currentCubeConfig.mode === DisplayMode.TIMER) {
+        <div class="timer-container">
+          <p-floatlabel variant="on">
+            <p-inputnumber
+              inputId="hours-{{ currentCubeConfig.displayId }}"
+              [min]="0"
+              [max]="23"
+              [inputSize]="1"
+              name="hours"
+              [ngModel]="currentCubeConfig.hours"
+              (ngModelChange)="onHoursChange($event, currentCubeConfig.displayId)"
+            />
+            <label for="hours-{{ currentCubeConfig.displayId }}"> Stunden </label>
+          </p-floatlabel>
+          <p-floatlabel variant="on">
+            <p-inputnumber
+              inputId="minutes-{{ currentCubeConfig.displayId }}"
+              [min]="0"
+              [max]="59"
+              [inputSize]="1"
+              name="minutes"
+              [ngModel]="currentCubeConfig.minutes"
+              (ngModelChange)="onMinutesChange($event, currentCubeConfig.displayId)"
+            />
+            <label for="minutes-{{ currentCubeConfig.displayId }}"> Minuten </label>
+          </p-floatlabel>
+          <p-floatlabel variant="on">
+            <p-inputnumber
+              inputId="seconds-{{ currentCubeConfig.displayId }}"
+              [min]="0"
+              [max]="59"
+              [inputSize]="1"
+              name="seconds"
+              [ngModel]="currentCubeConfig.seconds"
+              (ngModelChange)="onSecondsChange($event, currentCubeConfig.displayId)"
+            />
+            <label for="seconds-{{ currentCubeConfig.displayId }}"> Sekunden </label>
+          </p-floatlabel>
+        </div>
+        } @if (currentCubeConfig.displayId !== 6) {
+        <div class="file-buttons-add-remove-wrapper">
+          <p-fileupload
+            mode="basic"
+            chooseIcon="pi pi-upload"
+            [accept]="fileTypes"
+            maxFileSize="1000000"
+            customUpload="true"
+            (uploadHandler)="fileChangeEvent($event, currentCubeConfig.displayId)"
+            [auto]="true"
+            chooseLabel="Icon Auswählen"
+          />
+          @if (currentCubeConfig.iconForPreview) {
+          <p-button
+            label="Icon entfernen"
+            severity="secondary"
+            (onClick)="onRemoveImage(currentCubeConfig.displayId)"
+          />
+          }
+        </div>
+        }
+      </div>
+      @if (currentCubeConfig.iconForPreview) {
+      <img [src]="'data:image/bmp;base64,' + currentCubeConfig.iconForPreview" />
+      }
+    </form>
+  </div>
   }
 </div>
 
@@ -135,3 +166,90 @@
     <p-button label="Zuschneiden" (click)="uploadIcon()" />
   </div>
 </p-dialog>
+
+<p-drawer
+  position="right"
+  dismissible="false"
+  modal="false"
+  [visible]="showDrawer()"
+  (onHide)="onToggleShowDrawer()"
+>
+  <div class="cards">
+    @for (cubeConfig of cubeConfigModels(); track $index) {
+    <p-card class="card">
+      @if (cubeConfig.displayId !== 6) {
+      <ng-template #header>
+        @if (cubeConfig.iconForPreview) {
+        <img class="drawer-image" [src]="'data:image/bmp;base64,' + cubeConfig.iconForPreview" />
+        }
+      </ng-template>
+      }
+      <ng-template #title>
+        <span pTooltip="Ohne Bild" [tooltipDisabled]="cubeConfig.displayId !== 6">
+          Würfel Seite Nr. {{ cubeConfig.displayId }}
+        </span>
+      </ng-template>
+      <div class="card-body">
+        <div>
+          <label for="description">Bezeichnung</label>
+          <p id="description">{{ cubeConfig.description }}</p>
+        </div>
+        <div>
+          <label for="mode">Modus</label>
+          <p id="mode">{{ cubeConfig.mode === DisplayMode.STOPWATCH ? 'Stoppuhr' : 'Timer' }}</p>
+        </div>
+        @if (cubeConfig.mode === DisplayMode.TIMER) {
+        <div class="timer-container">
+          <p-floatlabel variant="on">
+            <p-inputnumber
+              readonly="true"
+              disabled="true"
+              inputId="hours-{{ cubeConfig.displayId }}"
+              [min]="0"
+              [max]="23"
+              [inputSize]="1"
+              [ngModel]="cubeConfig.hours"
+              (ngModelChange)="onHoursChange($event, cubeConfig.displayId)"
+            />
+            <label for="hours-{{ cubeConfig.displayId }}"> Stunden </label>
+          </p-floatlabel>
+          <p-floatlabel variant="on">
+            <p-inputnumber
+              readonly="true"
+              disabled="true"
+              inputId="minutes-{{ cubeConfig.displayId }}"
+              [min]="0"
+              [max]="59"
+              [inputSize]="1"
+              [ngModel]="cubeConfig.minutes"
+              (ngModelChange)="onMinutesChange($event, cubeConfig.displayId)"
+            />
+            <label for="minutes-{{ cubeConfig.displayId }}"> Minuten </label>
+          </p-floatlabel>
+          <p-floatlabel variant="on">
+            <p-inputnumber
+              readonly="true"
+              disabled="true"
+              inputId="seconds-{{ cubeConfig.displayId }}"
+              [min]="0"
+              [max]="59"
+              [inputSize]="1"
+              [ngModel]="cubeConfig.seconds"
+              (ngModelChange)="onSecondsChange($event, cubeConfig.displayId)"
+            />
+            <label for="seconds-{{ cubeConfig.displayId }}"> Sekunden </label>
+          </p-floatlabel>
+        </div>
+        }
+      </div>
+    </p-card>
+    <p-button
+      label="Seite bearbeiten"
+      severity="secondary"
+      (click)="onSelectedCubeSideChanged($index)"
+    />
+    @if (!$last) {
+    <p-divider></p-divider>
+    } }
+  </div>
+</p-drawer>
