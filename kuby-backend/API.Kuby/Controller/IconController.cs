@@ -18,12 +18,12 @@ public class IconController : ControllerBase
 
     [HttpPost("process")]
     [SwaggerResponseHeader(StatusCodes.Status201Created, "icons transformed", "string", "")]
-    public async Task<ActionResult<string>> ProcessIconsAsync([FromForm] IFormFileCollection files)
+    public async Task<ActionResult<string>> ProcessIconsAsync([FromForm] IFormFileCollection files, CancellationToken token)
     {
         var iconFiles = files.Select(f => new IconFile(f.FileName, f.OpenReadStream())).ToList();
         var command = new ProcessIconsCommand(iconFiles);
 
-        var result = await _mediator.Send<string>(command);
+        var result = await _mediator.Send<string>(command, token);
 
         return Ok(result);
     }

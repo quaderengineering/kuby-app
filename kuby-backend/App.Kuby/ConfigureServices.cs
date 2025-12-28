@@ -1,4 +1,5 @@
 ﻿using App.Kuby.UseCases.CubeBookings.Queries.GetById;
+using App.Kuby.UseCases.Cubes.Commands.Create;
 using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,5 +16,7 @@ public static class ConfigureServices
 
         //FIXME: this is for testing purposes
         services.AddScoped(typeof(IPipelineBehavior<GetCubeBookingQuery, CubeBookingReadResult>), typeof(GetCubeBookingQueryPreProcessor<GetCubeBookingQuery, CubeBookingReadResult>));
+
+        services.AddScoped(typeof(IPipelineBehavior<CreateCubeTimesCommand, IReadOnlyCollection<int>>), typeof(CreateCubeTimesPreProcessor<CreateCubeTimesCommand, IReadOnlyCollection<int>>));
     }
 }
