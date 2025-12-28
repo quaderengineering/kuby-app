@@ -43,34 +43,18 @@ public class CubeController : ControllerBase
     [SwaggerResponseHeader(StatusCodes.Status201Created, "times created", "ids", "")]
     public async Task<ActionResult<int>> PostAsync([FromBody] IReadOnlyCollection<TimeModel> timeModels, CancellationToken token)
     {
-        try
-        {
-            var query = new CreateCubeTimesCommand([.. timeModels.Select(CubeTimeMapping.MapToDomainModel)]);
-            var result = await _mediator.Send<IReadOnlyCollection<int>>(query, token);
-            return Ok(result);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, e.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        var query = new CreateCubeTimesCommand([.. timeModels.Select(CubeTimeMapping.MapToDomainModel)]);
+        var result = await _mediator.Send<IReadOnlyCollection<int>>(query, token);
+        return Ok(result);
     }
 
     [HttpPost("search")]
     [SwaggerResponseHeader(StatusCodes.Status201Created, "Times succesfully retreived", nameof(List<TimeViewModel>), "")]
     public async Task<ActionResult<int>> GetAllAsync([FromBody] CubeTimeSearchModel searchModel, CancellationToken token)
     {
-        try
-        {
-            var query = new GetAllCubeTimesQuery(searchModel.DateFrom, searchModel.DateTo);
-            var result = await _mediator.Send<IReadOnlyCollection<CubeTimeReadAllResult>>(query, token);
-            var viewModels = result.Select(r => r.MapToViewModel()).ToList();
-            return Ok(viewModels);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, e.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
+        var query = new GetAllCubeTimesQuery(searchModel.DateFrom.AddDays(1), searchModel.DateTo);
+        var result = await _mediator.Send<IReadOnlyCollection<CubeTimeReadAllResult>>(query, token);
+        var viewModels = result.Select(r => r.MapToViewModel()).ToList();
+        return Ok(viewModels);
     }
 }

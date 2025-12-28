@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Kuby.Exceptions;
 
 internal sealed class ValidationExceptionHandler(
-    IProblemDetailsService problemDetailsService,
     ILogger<ValidationExceptionHandler> logger) : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(
@@ -13,20 +12,17 @@ internal sealed class ValidationExceptionHandler(
         Exception exception, 
         CancellationToken token)
     {
+        return false;
         if (exception is not ValidationException validationException)
             return false;
 
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 
-        var context = new ProblemDetailsContext
+        var problemDetails = new ProblemDetails
         {
-            HttpContext = httpContext,
-            Exception = exception,
-            ProblemDetails = new ProblemDetails
-            {
-                Detail = "One or more validation errors occured",
-                Status = StatusCodes.Status400BadRequest,
-            }
+            Detail = "One or more validation errors occured",
+            Type = exception.GetType().Name,
+            Status = StatusCodes.Status400BadRequest,
         };
 
         var errors = validationException.Errors
@@ -36,8 +32,11 @@ internal sealed class ValidationExceptionHandler(
                 g => g.Select(e => e.ErrorMessage).ToArray()
             );
 
-        context.ProblemDetails.Extensions.Add("errors", errors);
+        problemDetails.Extensions.Add("errors", errors);
 
-        return await problemDetailsService.TryWriteAsync(context);
+        await httpContext
+            .Response
+            .WriteAsJsonAsync(problemDetails, token);
+        return false;
     }
 }

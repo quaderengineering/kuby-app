@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Kuby.Exceptions;
 
 internal sealed class GlobalExceptionHandler(
-    IProblemDetailsService problemDetailsService,
     ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {
-    public ValueTask<bool> TryHandleAsync(
+    public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext, 
         Exception exception, 
         CancellationToken token)
@@ -16,16 +15,18 @@ internal sealed class GlobalExceptionHandler(
 
         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-        return problemDetailsService.TryWriteAsync(new ProblemDetailsContext
+        var problemDetails = new ProblemDetails
         {
-            HttpContext = httpContext,
-            Exception = exception,
-            ProblemDetails = new ProblemDetails
-            {
-                Type = exception.GetType().Name,
-                Title = "An error occured",
-                Detail = exception.Message
-            }
-        });
+            Status = StatusCodes.Status500InternalServerError,
+            Title = "An error occured",
+            Type = exception.GetType().Name,
+            Detail = exception.Message
+        };
+
+        await httpContext
+            .Response
+            .WriteAsJsonAsync(problemDetails, token);
+
+        return true;
     }
 }

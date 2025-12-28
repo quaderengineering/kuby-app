@@ -5,8 +5,6 @@ using Domain.Kuby.Models;
 using Infrastructure.Kuby.Data.EntitiesConfig;
 using Infrastructure.Kuby.Mapping;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Infrastructure.Kuby.Repositories.EF;
 
@@ -43,5 +41,26 @@ internal class CubeTimeRepository : ICubeTimeRepository
                     };
 
         return await query.AsNoTracking().ToListAsync(token).ConfigureAwait(false);
+    }
+
+    public async ValueTask<IReadOnlyCollection<CubeTimeReadAllResult>> ReadAllAsync(GetAllCubeTimesQuery request, CancellationToken token)
+    {
+        return await _dbContext.CubeTime
+                    .Include(c => c.Intervals)
+                    .Where(c => c.Intervals.Any(i =>
+                        DateOnly.FromDateTime(i.Start) >= request.DateFrom &&
+                        DateOnly.FromDateTime(i.Start) <= request.DateTo &&
+                        DateOnly.FromDateTime(i.End) >= request.DateFrom &&
+                        DateOnly.FromDateTime(i.End) <= request.DateTo))
+                    .Select(c => new CubeTimeReadAllResult
+                    {
+                        TimeId = c.CubeTimeId,
+                        Label = c.Label,
+                        DisplayId = c.DisplayId,
+                        Intervals = c.Intervals
+                            .Select(interval => interval.MapToIntervalReadResult())
+                            .ToList(),
+                        TotalDuration = c.TotalDuration,
+                    }).AsNoTracking().ToListAsync(token).ConfigureAwait(false);
     }
 }
