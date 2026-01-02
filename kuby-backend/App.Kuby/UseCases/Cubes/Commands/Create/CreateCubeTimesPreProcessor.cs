@@ -16,7 +16,7 @@ public class CreateCubeTimesPreProcessor<TMessage, TResponse> : IPipelineBehavio
 
     public async ValueTask<TResponse> Handle(TMessage message, MessageHandlerDelegate<TMessage, TResponse> next, CancellationToken token)
     {
-        //TODO: only allow times that have not intervals that are already in the DB (reject duplicates) (for creating, editing would be another story)
+        // only allow times that have not intervals that are already in the DB (reject duplicates) (for creating, editing would be another story)
         var intervals = message.Times.SelectMany(t => t.Intervals).ToList();
         var intervalsByRange = await _cubeTimeRepository
             .ReadIntervalsByRangeAsync(GetMinDate(intervals), GetMaxDate(intervals), token).ConfigureAwait(false);

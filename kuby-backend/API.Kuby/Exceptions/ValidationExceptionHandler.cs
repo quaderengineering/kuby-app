@@ -12,7 +12,6 @@ internal sealed class ValidationExceptionHandler(
         Exception exception, 
         CancellationToken token)
     {
-        return false;
         if (exception is not ValidationException validationException)
             return false;
 
@@ -37,6 +36,6 @@ internal sealed class ValidationExceptionHandler(
         await httpContext
             .Response
             .WriteAsJsonAsync(problemDetails, token);
-        return false;
+        return true;
     }
 }
