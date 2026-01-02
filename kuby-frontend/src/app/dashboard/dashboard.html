@@ -1,7 +1,10 @@
-<!-- @for (time of (timeModels$ | async); track $index) { {{ time | json }} <br />
-<br />
-} -->
-
+<p-datepicker
+  [ngModel]="date | async"
+  (ngModelChange)="onDateChange($event)"
+  view="month"
+  dateFormat="mm/yy"
+  [readonlyInput]="true"
+/>
 @if ((timeModels$ | async); as timeModels) {
 <p-table
   [value]="timeModels"
@@ -37,7 +40,7 @@
       </td>
       <td>
         <span>
-          {{ timeModel.duration | date : 'hh:mm' }}
+          {{ timeModel.totalDuration }}
         </span>
       </td>
     </tr>

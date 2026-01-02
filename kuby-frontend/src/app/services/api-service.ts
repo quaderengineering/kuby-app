@@ -139,7 +139,7 @@ export class CubeClient {
      * @param body (optional) 
      * @return OK
      */
-    search(body: CubeTimeSearchModel | undefined): Observable<number> {
+    search(body: CubeTimeSearchModel | undefined): Observable<TimeViewModel[]> {
         let url_ = this.baseUrl + "/api/cubes/search";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -162,14 +162,14 @@ export class CubeClient {
                 try {
                     return this.processSearch(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<number>;
+                    return _observableThrow(e) as any as Observable<TimeViewModel[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<number>;
+                return _observableThrow(response_) as any as Observable<TimeViewModel[]>;
         }));
     }
 
-    protected processSearch(response: HttpResponseBase): Observable<number> {
+    protected processSearch(response: HttpResponseBase): Observable<TimeViewModel[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -179,7 +179,7 @@ export class CubeClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as number;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as TimeViewModel[];
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -264,15 +264,15 @@ export class IconClient {
 }
 
 export interface CubeTimeSearchModel {
-    dateFrom?: Date;
-    dateTo?: Date;
+    dateFrom?: string;
+    dateTo?: string;
 }
 
 export interface IntervalModel {
     intervalId?: number;
     timeId?: number;
-    start?: Date;
-    end?: Date;
+    start?: string;
+    end?: string;
     duration?: string;
 }
 
@@ -282,6 +282,14 @@ export interface TimeModel {
     label?: string | undefined;
     intervals?: IntervalModel[] | undefined;
     timeZoneInfo?: string | undefined;
+}
+
+export interface TimeViewModel {
+    timeId?: number;
+    displayId?: number;
+    label?: string | undefined;
+    intervals?: IntervalModel[] | undefined;
+    totalDuration?: string;
 }
 
 export interface FileParameter {

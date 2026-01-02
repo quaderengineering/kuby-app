@@ -406,6 +406,7 @@ kuby-frontend/.angular/cache
 /libpeerconnection.log
 testem.log
 /typings
+timemock.json
 
 # System files
 .DS_Store
