@@ -5,14 +5,14 @@ namespace Infrastructure.Kuby.Mapping;
 
 public static class CubeTimeMapping
 {
-    public static IntervalReadResult MapToIntervalReadResult(this Interval interval)
+    public static IntervalReadResult MapToIntervalReadResult(this Interval interval, string timeZoneInfo)
     {
         return new IntervalReadResult
         {
             IntervalId = interval.IntervalId,
             TimeId = interval.CubeTimeId,
-            Start = interval.Start,
-            End = interval.End,
+            Start = TimeZoneInfo.ConvertTimeFromUtc(interval.Start, TimeZoneInfo.FindSystemTimeZoneById(timeZoneInfo)),
+            End = TimeZoneInfo.ConvertTimeFromUtc(interval.End, TimeZoneInfo.FindSystemTimeZoneById(timeZoneInfo)),
             Duration = interval.Duration,
         };
     }

@@ -45,22 +45,24 @@ internal class CubeTimeRepository : ICubeTimeRepository
 
     public async ValueTask<IReadOnlyCollection<CubeTimeReadAllResult>> ReadAllAsync(GetAllCubeTimesQuery request, CancellationToken token)
     {
-        return await _dbContext.CubeTime
+        var times =  await _dbContext.CubeTime
                     .Include(c => c.Intervals)
                     .Where(c => c.Intervals.Any(i =>
                         DateOnly.FromDateTime(i.Start) >= request.DateFrom &&
                         DateOnly.FromDateTime(i.Start) <= request.DateTo &&
                         DateOnly.FromDateTime(i.End) >= request.DateFrom &&
                         DateOnly.FromDateTime(i.End) <= request.DateTo))
-                    .Select(c => new CubeTimeReadAllResult
-                    {
-                        TimeId = c.CubeTimeId,
-                        Label = c.Label,
-                        DisplayId = c.DisplayId,
-                        Intervals = c.Intervals
-                            .Select(interval => interval.MapToIntervalReadResult())
+                    .AsNoTracking().ToListAsync(token).ConfigureAwait(false);
+
+        return times.Select(c => new CubeTimeReadAllResult
+        {
+            TimeId = c.CubeTimeId,
+            Label = c.Label,
+            DisplayId = c.DisplayId,
+            Intervals = c.Intervals
+                            .Select(interval => interval.MapToIntervalReadResult(c.TimeZoneInfo))
                             .ToList(),
-                        TotalDuration = c.TotalDuration,
-                    }).AsNoTracking().ToListAsync(token).ConfigureAwait(false);
+            TotalDuration = c.TotalDuration,
+        }).ToList();
     }
 }
