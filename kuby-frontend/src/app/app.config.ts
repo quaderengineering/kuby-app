@@ -16,6 +16,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import Aura from '@primeuix/themes/aura';
 import { Noir } from './primeng-custom-preset';
 import { API_BASE_URL } from './services/api-service';
+import { de } from 'primelocale/js/de.js';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,6 +26,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideAnimationsAsync(),
     providePrimeNG({
+      translation: de,
       theme: {
         preset: Noir,
       },

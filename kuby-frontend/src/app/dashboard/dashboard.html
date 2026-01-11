@@ -2,7 +2,7 @@
   [ngModel]="date | async"
   (ngModelChange)="onDateChange($event)"
   view="month"
-  dateFormat="mm/yy"
+  dateFormat="MM yy"
   [readonlyInput]="true"
 />
 @if ((timeModels$ | async); as timeModels) {
@@ -36,14 +36,28 @@
           class="mr-2"
           [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
         ></button>
-        <span class="font-bold ml-2">{{ timeModel.label }}</span>
+        <span class="font-bold ml-2"
+          ><strong>{{ timeModel.label }}</strong></span
+        >
       </td>
       <td>
         <span>
-          {{ timeModel.totalDuration }}
+          <strong>
+            {{ timeModel.totalDuration }}
+          </strong>
         </span>
       </td>
     </tr>
+  </ng-template>
+  <ng-template #expandedrow let-timeModel>
+    @for (interval of timeModel.intervals; track $index) {
+    <tr>
+      <td></td>
+      <td>{{ interval.start | date : 'dd.MM.yyyy HH:mm:ss' }}</td>
+      <td>{{ interval.end | date : 'dd.MM.yyyy HH:mm:ss' }}</td>
+      <td>{{ interval.duration }}</td>
+    </tr>
+    }
   </ng-template>
 </p-table>
 }
