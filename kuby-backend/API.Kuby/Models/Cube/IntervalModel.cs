@@ -10,5 +10,5 @@ public class IntervalModel
 
     public DateTime End { get; set; }
 
-    public TimeSpan Duration { get; set; }
+    public TimeSpan Duration { get; set; }  
 }
