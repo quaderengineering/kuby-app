@@ -22,20 +22,9 @@
       <th>Dauer</th>
     </tr>
   </ng-template>
-  <ng-template #groupheader let-timeModel let-rowIndex="rowIndex" let-expanded="expanded">
+  <ng-template #groupheader let-timeModel>
     <tr>
       <td colspan="3">
-        <button
-          type="button"
-          pButton
-          pRipple
-          [pRowToggler]="timeModel"
-          text
-          rounded
-          plain
-          class="mr-2"
-          [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-        ></button>
         <strong>{{ timeModel.label }}</strong>
       </td>
       <td>
@@ -47,7 +36,7 @@
       </td>
     </tr>
   </ng-template>
-  <ng-template #expandedrow let-timeModel>
+  <ng-template #body let-timeModel>
     @for (interval of timeModel.intervals; track $index) {
     <tr>
       <td></td>
