@@ -54,6 +54,7 @@
   } @let currentCubeConfig = cubeConfigModels()[selectedCubeSideIndex()]; @if(currentCubeConfig) {
   <div class="form-wrapper">
     <form class="cube-config-form">
+      <h3 class="display-form-title">Seite {{ currentCubeConfig.displayId }}</h3>
       <div class="form-body">
         <p-floatlabel variant="on" class="description">
           <input
