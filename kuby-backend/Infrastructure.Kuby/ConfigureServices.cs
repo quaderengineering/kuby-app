@@ -16,8 +16,7 @@ public static class ConfigureServices
         services.AddScoped<IIconTransformationService, IconTransformationService>();
 
         // Repositories
-        services.AddScoped<ICubeBookingRepository, CubeBookingRepository>();
-        services.AddScoped<ICubeTimeRepository, CubeTimeRepository>();
+        services.AddScoped<IActivityRepository, ActivityRepository>();
 
         CreateDbConfigurations(services);
     }

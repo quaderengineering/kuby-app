@@ -1,6 +1,5 @@
-﻿using App.Kuby.UseCases.CubeBookings.Queries.GetById;
-using App.Kuby.UseCases.Cubes.Commands.Create;
-using App.Kuby.UseCases.Cubes.Queries.GetAll;
+﻿using App.Kuby.UseCases.Activities.Commands.Create;
+using App.Kuby.UseCases.Activities.Queries.GetAll;
 using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,10 +14,7 @@ public static class ConfigureServices
             options.ServiceLifetime = ServiceLifetime.Scoped;
         });
 
-        //FIXME: this is for testing purposes
-        services.AddScoped(typeof(IPipelineBehavior<GetCubeBookingQuery, CubeBookingReadResult>), typeof(GetCubeBookingQueryPreProcessor<GetCubeBookingQuery, CubeBookingReadResult>));
-
-        services.AddScoped(typeof(IPipelineBehavior<CreateCubeTimesCommand, IReadOnlyCollection<int>>), typeof(CreateCubeTimesPreProcessor<CreateCubeTimesCommand, IReadOnlyCollection<int>>));
-        services.AddScoped(typeof(IPipelineBehavior<GetAllCubeTimesQuery, IReadOnlyCollection<CubeTimeReadAllResult>>), typeof(GetAllCubeTimesPreProcessor<GetAllCubeTimesQuery, IReadOnlyCollection<CubeTimeReadAllResult>>));
+        services.AddScoped(typeof(IPipelineBehavior<CreateActivitiesCommand, IReadOnlyCollection<int>>), typeof(CreateActivitiesPreProcessor<CreateActivitiesCommand, IReadOnlyCollection<int>>));
+        services.AddScoped(typeof(IPipelineBehavior<GetAllActivitiesQuery, IReadOnlyCollection<ActivityReadAllResult>>), typeof(GetAllActivitiesPreProcessor<GetAllActivitiesQuery, IReadOnlyCollection<ActivityReadAllResult>>));
     }
 }

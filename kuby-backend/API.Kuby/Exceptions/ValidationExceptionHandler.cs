@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace API.Kuby.Exceptions;
 
@@ -14,6 +15,8 @@ internal sealed class ValidationExceptionHandler(
     {
         if (exception is not ValidationException validationException)
             return false;
+
+        logger.LogError(validationException, validationException.Errors.ToString());
 
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 

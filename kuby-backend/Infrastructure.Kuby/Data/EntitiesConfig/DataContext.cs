@@ -7,8 +7,6 @@ public class DataContext : DbContext
 {
     public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
-    public DbSet<Display> Display { get; set; }
-
-    public DbSet<CubeTime> CubeTime { get; set; }
-    public DbSet<Interval> Interval { get; set; }
+    public DbSet<Activity> Activity { get; set; }
+    public DbSet<TimeEntry> TimeEntry { get; set; }
 }
