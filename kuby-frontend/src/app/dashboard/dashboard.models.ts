@@ -1,4 +1,5 @@
-import { TimeModel } from '../services/api-service';
+import { FormControl } from '@angular/forms';
+import { ActivityModel } from '../services/api-service';
 
 export interface RtcTime {
   year: number;
@@ -20,12 +21,19 @@ export interface McuTimeModel {
   intervals: McuInterval[];
 }
 
-export interface IntervalModelFE {
-  intervalId?: number;
-  start?: Date;
-  end?: Date;
+export interface TimeEntryEditForm {
+  start: FormControl<Date | undefined | null>;
+  end: FormControl<Date | undefined | null>;
+  timeZoneInfo: FormControl<string | undefined | null>;
 }
 
-export interface TimeModelFE extends TimeModel {
-  intervalsFE?: IntervalModelFE[] | undefined;
+export interface TimeEntryModelFE {
+  timeEntryId?: number;
+  start?: Date;
+  end?: Date;
+  timeZoneInfo?: string;
+}
+
+export interface ActivityModelFE extends ActivityModel {
+  timeEntriesFE?: TimeEntryModelFE[] | undefined;
 }

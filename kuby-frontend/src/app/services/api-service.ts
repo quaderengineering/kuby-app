@@ -17,7 +17,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 @Injectable({
     providedIn: 'root'
 })
-export class CubeClient {
+export class ActivityClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -28,64 +28,11 @@ export class CubeClient {
     }
 
     /**
-     * @return OK
-     */
-    cubes(cubeBookingId: number): Observable<number> {
-        let url_ = this.baseUrl + "/api/cubes/{cubeBookingId}";
-        if (cubeBookingId === undefined || cubeBookingId === null)
-            throw new globalThis.Error("The parameter 'cubeBookingId' must be defined.");
-        url_ = url_.replace("{cubeBookingId}", encodeURIComponent("" + cubeBookingId));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCubes(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processCubes(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<number>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<number>;
-        }));
-    }
-
-    protected processCubes(response: HttpResponseBase): Observable<number> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as number;
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    /**
      * @param body (optional) 
      * @return OK
      */
-    times(body: TimeModel[] | undefined): Observable<number> {
-        let url_ = this.baseUrl + "/api/cubes/times";
+    activities(body: ActivityModel[] | undefined): Observable<number> {
+        let url_ = this.baseUrl + "/api/activities";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -101,11 +48,11 @@ export class CubeClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processTimes(response_);
+            return this.processActivities(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processTimes(response_ as any);
+                    return this.processActivities(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<number>;
                 }
@@ -114,7 +61,7 @@ export class CubeClient {
         }));
     }
 
-    protected processTimes(response: HttpResponseBase): Observable<number> {
+    protected processActivities(response: HttpResponseBase): Observable<number> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -139,8 +86,8 @@ export class CubeClient {
      * @param body (optional) 
      * @return OK
      */
-    search(body: CubeTimeSearchModel | undefined): Observable<TimeViewModel[]> {
-        let url_ = this.baseUrl + "/api/cubes/search";
+    search(body: ActivitySearchModel | undefined): Observable<ActivityViewModel[]> {
+        let url_ = this.baseUrl + "/api/activities/search";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -162,14 +109,14 @@ export class CubeClient {
                 try {
                     return this.processSearch(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<TimeViewModel[]>;
+                    return _observableThrow(e) as any as Observable<ActivityViewModel[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<TimeViewModel[]>;
+                return _observableThrow(response_) as any as Observable<ActivityViewModel[]>;
         }));
     }
 
-    protected processSearch(response: HttpResponseBase): Observable<TimeViewModel[]> {
+    protected processSearch(response: HttpResponseBase): Observable<ActivityViewModel[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -179,7 +126,7 @@ export class CubeClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as TimeViewModel[];
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ActivityViewModel[];
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -263,33 +210,31 @@ export class IconClient {
     }
 }
 
-export interface CubeTimeSearchModel {
+export interface ActivityModel {
+    activityId?: number;
+    label?: string | undefined;
+    timeEntries?: TimeEntryModel[] | undefined;
+}
+
+export interface ActivitySearchModel {
     dateFrom?: string;
     dateTo?: string;
 }
 
-export interface IntervalModel {
-    intervalId?: number;
-    timeId?: number;
+export interface ActivityViewModel {
+    activityId?: number;
+    label?: string | undefined;
+    timeEntries?: TimeEntryModel[] | undefined;
+    totalDuration?: string;
+}
+
+export interface TimeEntryModel {
+    timeEntryId?: number;
+    activityId?: number;
     start?: string;
     end?: string;
     duration?: string;
-}
-
-export interface TimeModel {
-    timeId?: number;
-    displayId?: number;
-    label?: string | undefined;
-    intervals?: IntervalModel[] | undefined;
     timeZoneInfo?: string | undefined;
-}
-
-export interface TimeViewModel {
-    timeId?: number;
-    displayId?: number;
-    label?: string | undefined;
-    intervals?: IntervalModel[] | undefined;
-    totalDuration?: string;
 }
 
 export interface FileParameter {

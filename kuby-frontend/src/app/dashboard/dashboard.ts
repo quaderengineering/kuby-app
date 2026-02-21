@@ -1,18 +1,17 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { IntervalModelFE, McuTimeModel, RtcTime, TimeModelFE } from './dashboard.models';
+import {
+  TimeEntryModelFE,
+  McuTimeModel,
+  RtcTime,
+  ActivityModelFE,
+  TimeEntryEditForm,
+} from './dashboard.models';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, EMPTY, map, Observable, of, switchMap, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { Ripple } from 'primeng/ripple';
-import {
-  CubeClient,
-  CubeTimeSearchModel,
-  IntervalModel,
-  TimeModel,
-  TimeViewModel,
-} from '../services/api-service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePickerModule, DatePickerMonthChangeEvent } from 'primeng/datepicker';
 import {
@@ -23,12 +22,14 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
-import { tr } from 'primelocale/js/tr.js';
-
-interface IntervalEditForm {
-  start: FormControl<Date | undefined | null>;
-  end: FormControl<Date | undefined | null>;
-}
+import {
+  ActivityClient,
+  ActivityModel,
+  ActivitySearchModel,
+  ActivityViewModel,
+  TimeEntryModel,
+} from '../services/api-service';
+import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-dashboard',
@@ -41,6 +42,7 @@ interface IntervalEditForm {
     FormsModule,
     DialogModule,
     ReactiveFormsModule,
+    SelectModule,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -50,13 +52,13 @@ export class Dashboard implements OnInit {
 
   public readonly modalVisible = signal(false);
 
-  public date = new BehaviorSubject<Date>(new Date());
+  public date$ = new BehaviorSubject<Date>(new Date());
 
-  public timeModels$?: Observable<TimeViewModel[]>;
+  public activityModels$?: Observable<ActivityViewModel[]>;
 
-  public rawTimeModels$ = new BehaviorSubject<TimeModelFE[] | undefined>(undefined);
+  public rawActivityModels$ = new BehaviorSubject<ActivityModelFE[] | undefined>(undefined);
 
-  public editForm: FormGroup<IntervalEditForm> | null = null;
+  public editForm: FormGroup<TimeEntryEditForm> | null = null;
 
   public get startControl(): FormControl<Date | undefined | null> {
     return this.editForm!.controls.start;
@@ -66,16 +68,22 @@ export class Dashboard implements OnInit {
     return this.editForm!.controls.end;
   }
 
-  private searchCriteria = new BehaviorSubject<CubeTimeSearchModel>({
+  public get timeZoneControl(): FormControl<string | undefined | null> {
+    return this.editForm!.controls.timeZoneInfo;
+  }
+
+  protected timeZones = Intl.supportedValuesOf('timeZone');
+
+  private searchCriteria = new BehaviorSubject<ActivitySearchModel>({
     dateFrom: this.getDefaultDateFrom(),
     dateTo: this.getDefaultDateTo(),
   });
 
-  private intervalIdCounter = 0;
+  private timeEntryIdCounter = 0;
 
-  private editingIntervalId: number | undefined = undefined;
+  private editingTimeEntryId: number | undefined = undefined;
 
-  private readonly cubeService = inject(CubeClient);
+  private readonly activityService = inject(ActivityClient);
   private readonly http = inject(HttpClient);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -86,16 +94,16 @@ export class Dashboard implements OnInit {
         takeUntilDestroyed(this.destroyRef),
         map((raw) => raw.map((mcu) => this.mapFromMcu(mcu))),
         tap((times) => {
-          this.rawTimeModels$.next(times);
+          this.rawActivityModels$.next(times);
           this.modalVisible.set(true);
         })
       )
       .subscribe();
 
-    this.timeModels$ = this.searchCriteria.pipe(
+    this.activityModels$ = this.searchCriteria.pipe(
       takeUntilDestroyed(this.destroyRef),
       switchMap((criteria) =>
-        this.cubeService.search(criteria).pipe(
+        this.activityService.search(criteria).pipe(
           takeUntilDestroyed(this.destroyRef),
           catchError((error) => {
             console.error('Search error:', error); //FIXME: handle in toast message
@@ -106,28 +114,33 @@ export class Dashboard implements OnInit {
     );
   }
 
+  public onChangeMonth(value: number): void {
+    const date = this.date$.value;
+    this.onDateChange(new Date(date.setMonth(date.getMonth() + value)));
+  }
+
+  public onChangeDateToToday(): void {
+    this.onDateChange(new Date());
+  }
+
   public onDateChange(date: Date): void {
     this.searchCriteria.next({
       dateFrom: this.getDefaultDateFrom(date.getFullYear(), date.getMonth()),
       dateTo: this.getDefaultDateTo(date.getFullYear(), date.getMonth()),
     });
-    this.date.next(date);
+    this.date$.next(date);
   }
 
   public onModalSave(): void {
-    console.log(this.rawTimeModels$.value);
-
-    const timeModelsToSave: TimeModel[] = this.rawTimeModels$.value!.map(
-      ({ intervalsFE, ...rest }) => ({
+    const activityModelsToSave: ActivityModel[] = this.rawActivityModels$.value!.map(
+      ({ timeEntriesFE: timeEntriesFE, ...rest }) => ({
         ...rest,
-        intervals: this.mapFromIntervalsFE(intervalsFE!),
+        timeEntries: this.mapFromTimeEntriesFE(timeEntriesFE!),
       })
     );
 
-    console.log(timeModelsToSave);
-
-    this.cubeService
-      .times(timeModelsToSave)
+    this.activityService
+      .activities(activityModelsToSave)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         catchError((error) => {
@@ -138,53 +151,57 @@ export class Dashboard implements OnInit {
       .subscribe({
         next: () => {
           this.modalVisible.set(false);
-          this.rawTimeModels$.next(undefined);
+          this.rawActivityModels$.next(undefined);
         },
       });
   }
 
-  public isEditing(interval: IntervalModelFE): boolean {
-    return this.editingIntervalId === interval.intervalId;
+  public isEditing(timeEntry: TimeEntryModelFE): boolean {
+    return this.editingTimeEntryId === timeEntry.timeEntryId;
   }
 
-  public startEdit(interval: IntervalModelFE): void {
-    this.editingIntervalId = interval.intervalId;
+  public startEdit(timeEntry: TimeEntryModelFE): void {
+    this.editingTimeEntryId = timeEntry.timeEntryId;
     this.isModalInEditMode.set(true);
 
-    this.editForm = new FormGroup<IntervalEditForm>({
-      start: new FormControl<Date | undefined>(interval.start, { nonNullable: false }),
-      end: new FormControl<Date | undefined>(interval.end, { nonNullable: false }),
+    this.editForm = new FormGroup<TimeEntryEditForm>({
+      start: new FormControl<Date | undefined>(timeEntry.start, { nonNullable: false }),
+      end: new FormControl<Date | undefined>(timeEntry.end, { nonNullable: false }),
+      timeZoneInfo: new FormControl<string | undefined | null>(timeEntry.timeZoneInfo, {
+        nonNullable: false,
+      }),
     });
   }
 
   public cancelEdit(): void {
     this.editForm = null;
-    this.editingIntervalId = undefined;
+    this.editingTimeEntryId = undefined;
     this.isModalInEditMode.set(false);
   }
 
-  public saveEdit(interval: IntervalModelFE): void {
+  public saveEdit(timeEntry: TimeEntryModelFE): void {
     if (!this.editForm) return;
 
     const formValue = this.editForm.value;
 
-    const updatedInterval: IntervalModelFE = {
-      ...interval,
+    const updatedTimeEntry: TimeEntryModelFE = {
+      ...timeEntry,
       start: formValue.start ?? undefined,
       end: formValue.end ?? undefined,
+      timeZoneInfo: formValue.timeZoneInfo ?? undefined,
     };
 
-    this.rawTimeModels$.next(
-      this.rawTimeModels$.value?.map((tm) => ({
+    this.rawActivityModels$.next(
+      this.rawActivityModels$.value?.map((tm) => ({
         ...tm,
-        intervalsFE: tm.intervalsFE?.map((i) =>
-          i.intervalId === interval.intervalId ? updatedInterval : i
+        timeEntriesFE: tm.timeEntriesFE?.map((t) =>
+          t.timeEntryId === timeEntry.timeEntryId ? updatedTimeEntry : t
         ),
       }))
     );
 
     this.editForm = null;
-    this.editingIntervalId = undefined;
+    this.editingTimeEntryId = undefined;
     this.isModalInEditMode.set(false);
   }
 
@@ -192,32 +209,32 @@ export class Dashboard implements OnInit {
     return new Date(stringDate);
   }
 
-  private mapFromMcu(mcu: McuTimeModel): TimeModelFE {
-    const intervals: IntervalModelFE[] = mcu.intervals.map((i) => ({
-      intervalId: ++this.intervalIdCounter,
+  private mapFromMcu(mcu: McuTimeModel): ActivityModelFE {
+    const timeEntries: TimeEntryModelFE[] = mcu.intervals.map((i) => ({
+      timeEntryId: ++this.timeEntryIdCounter,
       start: this.rtcToDate(i.start),
       end: i.end ? this.rtcToDate(i.end) : undefined,
+      timeZoneInfo: Intl.DateTimeFormat().resolvedOptions().timeZone,
       duration: 0,
       timeId: 0,
     }));
 
     return {
-      displayId: mcu.displayId,
       label: mcu.label,
-      intervalsFE: intervals,
-      timeZoneInfo: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      timeEntriesFE: timeEntries,
     };
   }
 
-  private mapFromIntervalsFE(intervalsFE: IntervalModelFE[]): IntervalModel[] {
-    return intervalsFE.map(
-      (intervalFE) =>
+  private mapFromTimeEntriesFE(timeEntriesFE: TimeEntryModelFE[]): TimeEntryModel[] {
+    return timeEntriesFE.map(
+      (timeEntryFE) =>
         ({
-          intervalId: 0,
+          timeEntryId: 0,
           timeId: 0,
-          start: intervalFE.start?.toISOString(),
-          end: intervalFE.end?.toISOString(),
-        } as IntervalModel)
+          start: timeEntryFE.start?.toISOString(),
+          end: timeEntryFE.end?.toISOString(),
+          timeZoneInfo: timeEntryFE.timeZoneInfo,
+        } as TimeEntryModel)
     );
   }
 
