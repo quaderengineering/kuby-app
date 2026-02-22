@@ -3,4 +3,4 @@ using Mediator;
 
 namespace App.Kuby.UseCases.Activities.Queries.GetAll;
 
-public record GetAllActivitiesQuery(bool IsActive, DateOnly DateFrom, DateOnly DateTo) : IRequest<IReadOnlyCollection<ActivityReadAllResult>>;
+public record GetAllActivitiesQuery(bool IsActive) : IRequest<IReadOnlyCollection<ActivityReadAllResult>>;

@@ -511,7 +511,6 @@ export interface ActivityModel {
 }
 
 export interface ActivityTimeEntrySearchModel {
-    isActive?: boolean;
     dateFrom?: string;
     dateTo?: string;
 }

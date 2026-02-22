@@ -88,8 +88,7 @@ public class ActivityController : ControllerBase
     [SwaggerResponseHeader(StatusCodes.Status400BadRequest, "Validation errors occured", nameof(ValidationException), "")]
     public async Task<ActionResult<List<ActivityViewModel>>> GetAllAsync([FromBody] bool isActive, CancellationToken token)
     {
-        //FIXME: remove date from query (make new query for this use case)
-        var query = new GetAllActivitiesQuery(isActive, DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now));
+        var query = new GetAllActivitiesQuery(isActive);
         var result = await _mediator.Send<IReadOnlyCollection<ActivityReadAllResult>>(query, token);
         var viewModels = result.Select(r => r.MapToViewModel()).ToList();
         return Ok(viewModels);

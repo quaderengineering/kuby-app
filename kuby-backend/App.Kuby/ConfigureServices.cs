@@ -21,6 +21,5 @@ public static class ConfigureServices
         services.AddScoped(typeof(IPipelineBehavior<UpdateActivityCommand, Unit>), typeof(UpdateActivityCommandPreProcessor<UpdateActivityCommand, Unit>));
         services.AddScoped(typeof(IPipelineBehavior<DeleteActivityCommand, Unit>), typeof(DeleteActivityCommandPreProcessor<DeleteActivityCommand, Unit>));
         services.AddScoped(typeof(IPipelineBehavior<ImportActivitiesCommand, IReadOnlyCollection<int>>), typeof(ImportActivitiesCommandPreProcessor<ImportActivitiesCommand, IReadOnlyCollection<int>>));
-        services.AddScoped(typeof(IPipelineBehavior<GetAllActivitiesQuery, IReadOnlyCollection<ActivityReadAllResult>>), typeof(GetAllActivitiesPreProcessor<GetAllActivitiesQuery, IReadOnlyCollection<ActivityReadAllResult>>));
     }
 }

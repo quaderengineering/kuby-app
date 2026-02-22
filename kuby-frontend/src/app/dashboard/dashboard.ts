@@ -142,7 +142,7 @@ export class Dashboard implements OnInit {
     );
 
     this.activityService
-      .activitiesPost(activityModelsToSave)
+      .importCubeData(activityModelsToSave)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         catchError((error) => {

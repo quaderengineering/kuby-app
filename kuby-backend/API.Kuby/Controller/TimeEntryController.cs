@@ -31,7 +31,7 @@ public class TimeEntryController : ControllerBase
     [SwaggerResponseHeader(StatusCodes.Status400BadRequest, "Validation errors occured", nameof(ValidationException), "")]
     public async Task<ActionResult<List<ActivityViewModel>>> GetAllAsync([FromBody] ActivityTimeEntrySearchModel searchModel, CancellationToken token)
     {
-        var query = new GetAllActivitiesQuery(true, searchModel.DateFrom, searchModel.DateTo);
+        var query = new GetAllTimeEntriesQuery(searchModel.DateFrom, searchModel.DateTo);
         var result = await _mediator.Send<IReadOnlyCollection<ActivityReadAllResult>>(query, token);
         var viewModels = result.Select(r => r.MapToViewModel()).ToList();
         return Ok(viewModels);
