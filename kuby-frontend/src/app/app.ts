@@ -30,6 +30,7 @@ export class App implements OnInit {
         routerLink: '/dashboard',
       },
       { label: 'Upload', icon: 'pi pi-upload', routerLink: '/upload' },
+      { label: 'Aktivitäten', icon: 'pi pi-list', routerLink: '/activity' },
     ];
 
     // (window as any).electron?.receive('usb-data-response', (data: any) => {

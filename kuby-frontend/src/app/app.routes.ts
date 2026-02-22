@@ -10,4 +10,8 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./cube-icon-uploader/cube-icon-uploader').then((m) => m.CubeIconUploader),
   },
+  {
+    path: 'activity',
+    loadComponent: () => import('./activity/activity').then((m) => m.Activity),
+  },
 ];

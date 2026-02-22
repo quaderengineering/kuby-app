@@ -1,0 +1,42 @@
+@if (activities$ | async; as activities) {
+<header>
+  <button
+    type="button"
+    pButton
+    pRipple
+    text
+    rounded
+    plain
+    icon="pi pi-plus"
+    (click)="onAdd()"
+  ></button>
+  <p-select
+    [options]="states"
+    [(ngModel)]="selectedState"
+    optionLabel="name"
+    appendTo="body"
+  ></p-select>
+</header>
+<div class="splitter-wrapper">
+  <!-- <p-splitter class="splitter" [style]="{ height: '100%' }">
+    <ng-template #panel> -->
+  <app-activity-grid
+    class="panel-content"
+    [activities]="activities"
+    (onDeleteActivity)="onDelete($event)"
+    (onEditActivity)="onEdit($event)"
+  ></app-activity-grid>
+  <!-- </ng-template>
+    <ng-template #panel>
+      <div class="panel-content">detail</div>
+    </ng-template>
+  </p-splitter> -->
+</div>
+
+@if (isEditorOpen()) {
+<app-activity-editor
+  [activity]="activityToEdit()"
+  (onClose)="onClose()"
+  (onSubmitData)="onSubmit($event)"
+></app-activity-editor>
+} }

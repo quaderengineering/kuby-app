@@ -1,0 +1,23 @@
+header {
+  display: flex;
+  margin-top: 1rem;
+  gap: 1rem;
+}
+
+.splitter-wrapper {
+  margin: 1rem 0;
+  height: calc(100vh - 150px); /* Adjust based on your layout */
+  width: 100%;
+}
+
+.splitter {
+  width: 100%;
+  height: 100%;
+}
+
+.panel-content {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}

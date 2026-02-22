@@ -28,11 +28,66 @@ export class ActivityClient {
     }
 
     /**
-     * @param body (optional) 
      * @return OK
      */
-    activities(body: ActivityModel[] | undefined): Observable<number> {
-        let url_ = this.baseUrl + "/api/activities";
+    activitiesGet(activityId: string): Observable<ActivityModel> {
+        let url_ = this.baseUrl + "/api/activities/{activityId}";
+        if (activityId === undefined || activityId === null)
+            throw new globalThis.Error("The parameter 'activityId' must be defined.");
+        url_ = url_.replace("{activityId}", encodeURIComponent("" + activityId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processActivitiesGet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processActivitiesGet(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ActivityModel>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ActivityModel>;
+        }));
+    }
+
+    protected processActivitiesGet(response: HttpResponseBase): Observable<ActivityModel> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ActivityModel;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    activitiesPut(activityId: string, body: ActivityModel): Observable<number> {
+        let url_ = this.baseUrl + "/api/activities/{activityId}";
+        if (activityId === undefined || activityId === null)
+            throw new globalThis.Error("The parameter 'activityId' must be defined.");
+        url_ = url_.replace("{activityId}", encodeURIComponent("" + activityId));
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -47,12 +102,12 @@ export class ActivityClient {
             })
         };
 
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processActivities(response_);
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processActivitiesPut(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processActivities(response_ as any);
+                    return this.processActivitiesPut(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<number>;
                 }
@@ -61,7 +116,60 @@ export class ActivityClient {
         }));
     }
 
-    protected processActivities(response: HttpResponseBase): Observable<number> {
+    protected processActivitiesPut(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as number;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    activitiesDelete(activityId: string): Observable<number> {
+        let url_ = this.baseUrl + "/api/activities/{activityId}";
+        if (activityId === undefined || activityId === null)
+            throw new globalThis.Error("The parameter 'activityId' must be defined.");
+        url_ = url_.replace("{activityId}", encodeURIComponent("" + activityId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processActivitiesDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processActivitiesDelete(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<number>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<number>;
+        }));
+    }
+
+    protected processActivitiesDelete(response: HttpResponseBase): Observable<number> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -86,7 +194,117 @@ export class ActivityClient {
      * @param body (optional) 
      * @return OK
      */
-    search(body: ActivitySearchModel | undefined): Observable<ActivityViewModel[]> {
+    activitiesPost(body: ActivityModel[] | undefined): Observable<number> {
+        let url_ = this.baseUrl + "/api/activities";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processActivitiesPost(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processActivitiesPost(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<number>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<number>;
+        }));
+    }
+
+    protected processActivitiesPost(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as number;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    importCubeData(body: ActivityModel[] | undefined): Observable<CubeImportResult> {
+        let url_ = this.baseUrl + "/api/activities/import-cube-data";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processImportCubeData(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processImportCubeData(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<CubeImportResult>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<CubeImportResult>;
+        }));
+    }
+
+    protected processImportCubeData(response: HttpResponseBase): Observable<CubeImportResult> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as CubeImportResult;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    search(body: boolean | undefined): Observable<ActivityViewModel[]> {
         let url_ = this.baseUrl + "/api/activities/search";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -210,27 +428,113 @@ export class IconClient {
     }
 }
 
-export interface ActivityModel {
+@Injectable({
+    providedIn: 'root'
+})
+export class TimeEntryClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    search(body: ActivityTimeEntrySearchModel | undefined): Observable<ActivityViewModel[]> {
+        let url_ = this.baseUrl + "/api/timeEntries/search";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSearch(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSearch(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ActivityViewModel[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ActivityViewModel[]>;
+        }));
+    }
+
+    protected processSearch(response: HttpResponseBase): Observable<ActivityViewModel[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ActivityViewModel[];
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+export interface ActivityImportResult {
     activityId?: number;
+    activityName?: string | undefined;
+    entriesAdded?: number;
+    entriesDuplicate?: number;
+}
+
+export interface ActivityModel {
+    activityId?: string;
     label?: string | undefined;
     timeEntries?: TimeEntryModel[] | undefined;
 }
 
-export interface ActivitySearchModel {
+export interface ActivityTimeEntrySearchModel {
+    isActive?: boolean;
     dateFrom?: string;
     dateTo?: string;
 }
 
 export interface ActivityViewModel {
-    activityId?: number;
+    activityId?: string;
     label?: string | undefined;
     timeEntries?: TimeEntryModel[] | undefined;
     totalDuration?: string;
+    createdAt?: string;
+    isActive?: boolean;
+}
+
+export interface CubeImportResult {
+    activityResults?: ActivityImportResult[] | undefined;
+    errors?: string[] | undefined;
+    readonly totalEntriesAdded?: number;
+    readonly totalDuplicates?: number;
 }
 
 export interface TimeEntryModel {
     timeEntryId?: number;
-    activityId?: number;
+    activityId?: string;
     start?: string;
     end?: string;
     duration?: string;

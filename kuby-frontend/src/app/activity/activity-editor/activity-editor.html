@@ -1,0 +1,22 @@
+<p-dialog
+  [visible]="true"
+  [modal]="true"
+  draggable="false"
+  resizable="false"
+  (visibleChange)="onCancel()"
+>
+  <p-floatlabel variant="on" class="label">
+    <input
+      pInputText
+      placeholder="E-Mails lesen"
+      id="label"
+      name="label"
+      [(ngModel)]="editActivity().label"
+    />
+    <label for="label">Bezeichnung</label>
+  </p-floatlabel>
+  <div class="buttons">
+    <button type="button" pButton (click)="onSubmit()">Speichern</button>
+    <button type="button" pButton text (click)="onCancel()">Abbrechen</button>
+  </div>
+</p-dialog>

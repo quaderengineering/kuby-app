@@ -25,8 +25,9 @@ import { DialogModule } from 'primeng/dialog';
 import {
   ActivityClient,
   ActivityModel,
-  ActivitySearchModel,
+  ActivityTimeEntrySearchModel,
   ActivityViewModel,
+  TimeEntryClient,
   TimeEntryModel,
 } from '../services/api-service';
 import { SelectModule } from 'primeng/select';
@@ -74,7 +75,7 @@ export class Dashboard implements OnInit {
 
   protected timeZones = Intl.supportedValuesOf('timeZone');
 
-  private searchCriteria = new BehaviorSubject<ActivitySearchModel>({
+  private searchCriteria = new BehaviorSubject<ActivityTimeEntrySearchModel>({
     dateFrom: this.getDefaultDateFrom(),
     dateTo: this.getDefaultDateTo(),
   });
@@ -84,6 +85,7 @@ export class Dashboard implements OnInit {
   private editingTimeEntryId: number | undefined = undefined;
 
   private readonly activityService = inject(ActivityClient);
+  private readonly timeEntryService = inject(TimeEntryClient);
   private readonly http = inject(HttpClient);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -103,7 +105,7 @@ export class Dashboard implements OnInit {
     this.activityModels$ = this.searchCriteria.pipe(
       takeUntilDestroyed(this.destroyRef),
       switchMap((criteria) =>
-        this.activityService.search(criteria).pipe(
+        this.timeEntryService.search(criteria).pipe(
           takeUntilDestroyed(this.destroyRef),
           catchError((error) => {
             console.error('Search error:', error); //FIXME: handle in toast message
@@ -140,7 +142,7 @@ export class Dashboard implements OnInit {
     );
 
     this.activityService
-      .activities(activityModelsToSave)
+      .activitiesPost(activityModelsToSave)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         catchError((error) => {
