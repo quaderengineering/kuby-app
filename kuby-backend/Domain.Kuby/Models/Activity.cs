@@ -1,4 +1,6 @@
-﻿namespace Domain.Kuby.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Domain.Kuby.Models;
 
 public class Activity
 {
@@ -6,7 +8,17 @@ public class Activity
 
     public string Label { get; set; } = string.Empty;
 
-    public TimeSpan TotalDuration { get; set; }
+    public DateTime CreatedAt { get; set; }
+
+    public bool IsActive { get; set; }
 
     public ICollection<TimeEntry> TimeEntry { get; set; } = new List<TimeEntry>();
+
+    [NotMapped]
+    public bool IsLabelTaken { get; private set; } = false;
+
+    public void SetLabelTakenFlag(bool isLabelTaken)
+    {
+        IsLabelTaken = isLabelTaken;
+    }
 }

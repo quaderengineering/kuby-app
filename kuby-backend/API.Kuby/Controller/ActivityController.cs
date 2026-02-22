@@ -2,10 +2,12 @@
 using API.Kuby.Models.Activity;
 using App.Kuby.UseCases.Activities.Commands.Create;
 using App.Kuby.UseCases.Activities.Commands.Import;
+using App.Kuby.UseCases.Activities.Commands.Update;
 using App.Kuby.UseCases.Activities.Queries.GetAll;
 using FluentValidation;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace API.Kuby.Controller;
@@ -31,6 +33,29 @@ public class ActivityController : ControllerBase
         var query = new CreateActivitiesCommand([.. activityModels.Select(ActivityMapping.MapToDomainModel)]);
         var result = await _mediator.Send<IReadOnlyCollection<Guid>>(query, token);
         return Ok(result);
+    }
+
+    [HttpPut("{activityId:guid}")]
+    [SwaggerResponseHeader(StatusCodes.Status204NoContent, "activity updated", "", "")]
+    [SwaggerResponseHeader(StatusCodes.Status400BadRequest, "Validation errors occured", nameof(ValidationException), "")]
+    public async Task<ActionResult<int>> PutAsync([FromRoute] Guid activityId, [FromBody, BindRequired] ActivityModel activityModel, CancellationToken token)
+    {
+        if (activityModel.ActivityId != activityId)
+            return BadRequest("The id in the route does not match the id in the body.");
+
+        var query = new UpdateActivityCommand(activityModel.MapToDomainModel());
+        var result = await _mediator.Send(query, token);
+        return NoContent();
+    }
+
+    [HttpDelete("{activityId:guid}")]
+    [SwaggerResponseHeader(StatusCodes.Status204NoContent, "activity deleted", "", "")]
+    [SwaggerResponseHeader(StatusCodes.Status400BadRequest, "Validation errors occured", nameof(ValidationException), "")]
+    public async Task<ActionResult<int>> DeleteAsync([FromRoute] Guid activityId, CancellationToken token)
+    {
+        var query = new DeleteActivityCommand(activityId);
+        var result = await _mediator.Send(query, token);
+        return NoContent();
     }
 
     [HttpPost("import-cube-data")]

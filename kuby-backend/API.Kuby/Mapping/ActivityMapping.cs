@@ -22,7 +22,6 @@ public static class ActivityMapping
                 Duration = t.End - t.Start,
                 TimeZoneInfo = t.TimeZoneInfo,
             }).ToList(),
-            TotalDuration = TimeSpan.FromTicks(activity.TimeEntries.Sum(t => (t.End - t.Start).Ticks))
         };
     }
 

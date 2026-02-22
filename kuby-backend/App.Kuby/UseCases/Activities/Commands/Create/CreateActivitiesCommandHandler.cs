@@ -14,6 +14,6 @@ public class CreateActivitiesCommandHandler : IRequestHandler<CreateActivitiesCo
 
     public ValueTask<IReadOnlyCollection<Guid>> Handle(CreateActivitiesCommand request, CancellationToken token)
     {
-        return _activityTimeRepository.CreateActivitiesAsync(request.Activity, token);
+        return _activityTimeRepository.CreateActivitiesAsync(request.Activities, token);
     }
 }

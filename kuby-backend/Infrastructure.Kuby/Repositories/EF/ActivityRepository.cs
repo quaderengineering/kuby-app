@@ -1,5 +1,4 @@
 ﻿using App.Kuby.Interfaces.Repositories;
-using App.Kuby.UseCases.Activities.Common;
 using App.Kuby.UseCases.Activities.Queries.GetAll;
 using Domain.Kuby.Models;
 using Infrastructure.Kuby.Data.EntitiesConfig;
@@ -17,11 +16,37 @@ internal class ActivityRepository : IActivityRepository
         _dbContext = dbContext;
     }
 
+    public async ValueTask<Activity?> GetActivityAsync(Guid activityId, CancellationToken token)
+    {
+        return await _dbContext.Activity
+            .Where(a => a.ActivityId == activityId && a.IsActive)
+            .SingleOrDefaultAsync(token).ConfigureAwait(false);
+    }
+
     public async ValueTask<IReadOnlyCollection<Guid>> CreateActivitiesAsync(IReadOnlyCollection<Activity> activities, CancellationToken token)
     {
-        await _dbContext.AddRangeAsync(activities, token).ConfigureAwait(false);
+        var activeActivities = activities.Select(a =>
+        {
+            a.CreatedAt = DateTime.UtcNow;
+            a.IsActive = true;
+            return a;
+        });
+        await _dbContext.AddRangeAsync(activeActivities, token).ConfigureAwait(false);
         await _dbContext.SaveChangesAsync(token).ConfigureAwait(false);
-        return activities.Select(a => a.ActivityId).ToList();
+        return activeActivities.Select(a => a.ActivityId).ToList();
+    }
+
+    public async ValueTask UpdateActivityAsync(CancellationToken token)
+    {
+        await _dbContext.SaveChangesAsync(token).ConfigureAwait(false);
+    }
+
+    public async ValueTask DeleteActivityAsync(Guid activityId, CancellationToken token)
+    {
+        var activity = await GetActivityAsync(activityId, token).ConfigureAwait(false);
+        activity!.IsActive = false;
+
+        await _dbContext.SaveChangesAsync(token).ConfigureAwait(false);
     }
 
     public async ValueTask<IReadOnlyCollection<Activity>> ReadActivitiesAsync(IReadOnlyCollection<Guid> activityIds, CancellationToken token)
@@ -51,5 +76,16 @@ internal class ActivityRepository : IActivityRepository
                             .ToList(),
             TotalDuration = TimeSpan.FromTicks(c.TimeEntry.Sum(i => (i.End - i.Start).Ticks)),
         }).ToList();
+    }
+
+    public async ValueTask<bool> IsLabelTaken(Activity activity, CancellationToken token)
+    {
+        return await _dbContext.Activity
+            .Where(a => 
+            a.Label == activity.Label 
+            && a.ActivityId != activity.ActivityId 
+            && a.IsActive)
+            .Select(a => a.ActivityId)
+            .AnyAsync(token).ConfigureAwait(false);
     }
 }
