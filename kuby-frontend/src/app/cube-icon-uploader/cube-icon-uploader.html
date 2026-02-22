@@ -56,17 +56,21 @@
     <form class="cube-config-form">
       <h3 class="display-form-title">Seite {{ currentCubeConfig.displayId }}</h3>
       <div class="form-body">
-        <p-floatlabel variant="on" class="description">
-          <input
-            pInputText
-            placeholder="E-Mails lesen"
-            id="description-{{ currentCubeConfig.displayId }}"
-            name="description"
-            [ngModel]="currentCubeConfig.description"
-            (ngModelChange)="onDescriptionChange($event, currentCubeConfig.displayId)"
-          />
-          <label for="description-{{ currentCubeConfig.displayId }}">Bezeichnung</label>
-        </p-floatlabel>
+        <p-select
+          class="drop-down"
+          id="activity-{{ currentCubeConfig.displayId }}"
+          [ngModel]="currentCubeConfig.activityId"
+          [checkmark]="true"
+          [showClear]="true"
+          [filter]="true"
+          filterBy="label"
+          [options]="activities()"
+          (ngModelChange)="onActivityChange($event, currentCubeConfig.displayId)"
+          optionLabel="label"
+          optionValue="activityId"
+          placeholder="Aktivität auswählen..."
+          name="activities"
+        ></p-select>
         <p-selectbutton
           id="mode"
           [options]="cubeModes"
@@ -193,7 +197,7 @@
       <div class="card-body">
         <div>
           <label for="description">Bezeichnung</label>
-          <p id="description">{{ cubeConfig.description }}</p>
+          <p id="description">{{ cubeConfig.label }}</p>
         </div>
         <div>
           <label for="mode">Modus</label>

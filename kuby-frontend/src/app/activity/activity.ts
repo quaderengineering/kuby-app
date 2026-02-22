@@ -10,7 +10,7 @@ import { SplitterModule } from 'primeng/splitter';
 import { ActivityGrid } from './activity-grid/activity-grid';
 import { Ripple } from 'primeng/ripple';
 import { SelectModule } from 'primeng/select';
-import { StateModel } from './activity-models';
+import { StateModel } from './activity.models';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { ActivityEditor } from './activity-editor/activity-editor';
 

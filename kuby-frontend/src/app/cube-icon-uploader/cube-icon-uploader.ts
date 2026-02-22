@@ -1,4 +1,4 @@
-import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, linkedSignal, signal } from '@angular/core';
 import { CubeConfigModel, DisplayMode } from './cube-icon-uploader.models';
 import { CardModule } from 'primeng/card';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FileUploadHandlerEvent, FileUploadModule } from 'primeng/fileupload';
 import { ButtonModule } from 'primeng/button';
-import { IconClient } from '../services/api-service';
+import { ActivityClient, ActivityViewModel, IconClient } from '../services/api-service';
 import { TooltipModule } from 'primeng/tooltip';
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 import { DialogModule } from 'primeng/dialog';
@@ -18,6 +18,8 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { DividerModule } from 'primeng/divider';
 import { DrawerModule } from 'primeng/drawer';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Select, SelectChangeEvent, SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-cube-icon-uploader',
@@ -39,12 +41,16 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
     SelectButtonModule,
     DividerModule,
     DrawerModule,
+    SelectModule,
   ],
   templateUrl: './cube-icon-uploader.html',
   styleUrl: './cube-icon-uploader.scss',
 })
 export class CubeIconUploader {
+  public readonly activities = signal<ActivityViewModel[]>([]);
+
   public readonly initialCubeConfigModelsState = signal<CubeConfigModel[]>([]);
+
   public readonly cubeConfigModels = signal<CubeConfigModel[]>([]);
 
   public readonly imageFile = signal<File | undefined>(undefined);
@@ -77,8 +83,17 @@ export class CubeIconUploader {
   private readonly imageCroppedEvent = signal<ImageCroppedEvent | undefined>(undefined);
 
   private readonly iconService = inject(IconClient);
+  private readonly activityService = inject(ActivityClient);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
+    this.activityService
+      .search(true)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (activities) => this.activities.set(activities),
+        error: (error) => console.error(error),
+      });
     this.cubeConfigModels.set(this.initializeCubeConfig());
     this.initialCubeConfigModelsState.set(this.cubeConfigModels());
   }
@@ -154,14 +169,24 @@ export class CubeIconUploader {
     });
   }
 
-  public onDescriptionChange(value: string, displayId: number): void {
+  public onActivityChange(activityId: string | null, displayId: number): void {
     this.cubeConfigModels.update((models) => {
+      const index = models.findIndex((c) => c.displayId === displayId);
+      if (index === -1) return models;
+
+      const selectedActivity = this.activities().find((a) => a.activityId === activityId);
+      if (!selectedActivity && activityId !== null) return models;
+
       const clone = [...models];
-      const index = clone.findIndex((c) => c.displayId === displayId);
-      clone[index] = { ...clone[index], description: value };
+      clone[index] = {
+        ...clone[index],
+        activityId: activityId,
+        label: selectedActivity?.label! ?? null,
+      };
       return clone;
     });
   }
+
   public onModeChange(value: DisplayMode, displayId: number): void {
     this.cubeConfigModels.update((models) => {
       const clone = [...models];
@@ -214,8 +239,9 @@ export class CubeIconUploader {
     const configModels: CubeConfigModel[] = [];
     for (let i = 0; i < 5; i++) {
       configModels.push({
+        activityId: null,
+        label: null,
         displayId: i + 1,
-        description: '',
         mode: DisplayMode.STOPWATCH,
         hours: 0,
         minutes: 0,

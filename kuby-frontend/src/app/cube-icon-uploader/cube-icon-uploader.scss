@@ -7,7 +7,12 @@
 }
 
 .card {
-  width: 240px;
+  width: 15rem;
+}
+
+.drop-down {
+  max-width: 23rem;
+  min-width: 11rem;
 }
 
 .remove-img-button {
@@ -103,6 +108,7 @@
 .form-body {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 2rem;
 }
 

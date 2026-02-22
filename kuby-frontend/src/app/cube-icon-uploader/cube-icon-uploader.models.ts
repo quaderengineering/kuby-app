@@ -1,10 +1,11 @@
 export interface CubeConfigModel {
+  activityId: string | null;
+  label: string | null;
   displayId: number;
   mode: DisplayMode;
   time?: Date;
   iconByteArray?: string;
   iconForPreview?: string;
-  description: string;
   hours: number;
   minutes: number;
   seconds: number;

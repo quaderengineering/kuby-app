@@ -10,12 +10,7 @@
     icon="pi pi-plus"
     (click)="onAdd()"
   ></button>
-  <p-select
-    [options]="states"
-    [(ngModel)]="selectedState"
-    optionLabel="name"
-    appendTo="body"
-  ></p-select>
+  <p-select [options]="states" [(ngModel)]="selectedState" optionLabel="name"></p-select>
 </header>
 <div class="splitter-wrapper">
   <!-- <p-splitter class="splitter" [style]="{ height: '100%' }">
