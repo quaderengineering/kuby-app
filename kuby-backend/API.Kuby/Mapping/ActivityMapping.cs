@@ -1,6 +1,7 @@
 ﻿using API.Kuby.Models.Activity;
 using App.Kuby.UseCases.Activities.Common;
-using App.Kuby.UseCases.Activities.Queries.GetAll;
+using App.Kuby.UseCases.Activities.Queries.GetById;
+using App.Kuby.UseCases.Common;
 using Domain.Kuby.Models;
 
 namespace API.Kuby.Mapping;
@@ -33,6 +34,17 @@ public static class ActivityMapping
             Label = activityTimeReadAllResult.Label,
             TimeEntries = activityTimeReadAllResult.TimeEntries.Select(t => t.MapToTimeEntry()).ToList(),
             TotalDuration = activityTimeReadAllResult.TotalDuration,
+            CreatedAt = activityTimeReadAllResult.CreatedAt,
+            IsActive = activityTimeReadAllResult.IsActive
+        };
+    }
+
+    public static ActivityModel MapToModel(this ActivityReadResult activityTimeReadResult)
+    {
+        return new ActivityModel
+        {
+            ActivityId = activityTimeReadResult.ActivityId,
+            Label = activityTimeReadResult.Label
         };
     }
 

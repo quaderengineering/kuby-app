@@ -9,4 +9,8 @@ public class ActivityViewModel
     public List<TimeEntryModel> TimeEntries { get; set; } = new List<TimeEntryModel>();
 
     public TimeSpan TotalDuration { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public bool IsActive { get; set; }
 }

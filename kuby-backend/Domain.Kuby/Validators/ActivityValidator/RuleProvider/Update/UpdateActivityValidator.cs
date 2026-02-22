@@ -10,5 +10,6 @@ public class UpdateActivityValidator : AbstractValidator<Activity>
     {
         Include(new ActivityRules());
         RuleFor(activity => activity.ActivityId).GreaterThan(default(Guid));
+        RuleFor(activity => activity.IsActive).Equals(true);
     }
 }

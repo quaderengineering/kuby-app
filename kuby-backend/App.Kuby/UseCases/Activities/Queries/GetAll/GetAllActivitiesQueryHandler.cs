@@ -1,4 +1,5 @@
 ﻿using App.Kuby.Interfaces.Repositories;
+using App.Kuby.UseCases.Common;
 using Mediator;
 
 namespace App.Kuby.UseCases.Activities.Queries.GetAll;

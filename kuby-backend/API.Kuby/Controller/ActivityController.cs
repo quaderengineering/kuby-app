@@ -4,6 +4,8 @@ using App.Kuby.UseCases.Activities.Commands.Create;
 using App.Kuby.UseCases.Activities.Commands.Import;
 using App.Kuby.UseCases.Activities.Commands.Update;
 using App.Kuby.UseCases.Activities.Queries.GetAll;
+using App.Kuby.UseCases.Activities.Queries.GetById;
+using App.Kuby.UseCases.Common;
 using FluentValidation;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +25,19 @@ public class ActivityController : ControllerBase
     {
         _mediator = mediator;
         _logger = logger;
+    }
+
+    [HttpGet("{activityId:guid}")]
+    [SwaggerResponseHeader(StatusCodes.Status200OK, "activity retreived", nameof(ActivityModel), "")]
+    [SwaggerResponseHeader(StatusCodes.Status404NotFound, "activity not found", "", "")]
+    public async Task<ActionResult<ActivityModel>> PutAsync([FromRoute] Guid activityId, CancellationToken token)
+    {
+        var query = new GetActivityByIdQuery(activityId);
+        var result = await _mediator.Send<ActivityReadResult>(query, token);
+        if (result == null)
+            return NotFound();
+
+        return Ok(result.MapToModel());
     }
 
     [HttpPost]
@@ -71,9 +86,10 @@ public class ActivityController : ControllerBase
     [HttpPost("search")]
     [SwaggerResponseHeader(StatusCodes.Status201Created, "activities succesfully retreived", nameof(List<ActivityViewModel>), "")]
     [SwaggerResponseHeader(StatusCodes.Status400BadRequest, "Validation errors occured", nameof(ValidationException), "")]
-    public async Task<ActionResult<List<ActivityViewModel>>> GetAllAsync([FromBody] ActivitySearchModel searchModel, CancellationToken token)
+    public async Task<ActionResult<List<ActivityViewModel>>> GetAllAsync([FromBody] bool isActive, CancellationToken token)
     {
-        var query = new GetAllActivitiesQuery(searchModel.DateFrom, searchModel.DateTo);
+        //FIXME: remove date from query (make new query for this use case)
+        var query = new GetAllActivitiesQuery(isActive, DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now));
         var result = await _mediator.Send<IReadOnlyCollection<ActivityReadAllResult>>(query, token);
         var viewModels = result.Select(r => r.MapToViewModel()).ToList();
         return Ok(viewModels);

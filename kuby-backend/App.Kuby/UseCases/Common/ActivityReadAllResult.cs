@@ -1,6 +1,6 @@
 ﻿using App.Kuby.UseCases.Activities.Common;
 
-namespace App.Kuby.UseCases.Activities.Queries.GetAll;
+namespace App.Kuby.UseCases.Common;
 
 public class ActivityReadAllResult
 {
@@ -11,4 +11,8 @@ public class ActivityReadAllResult
     public List<TimeEntriesReadResult> TimeEntries { get; set; } = new List<TimeEntriesReadResult>();
 
     public TimeSpan TotalDuration { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public bool IsActive { get; set; }
 }

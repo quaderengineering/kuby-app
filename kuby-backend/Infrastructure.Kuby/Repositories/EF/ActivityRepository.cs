@@ -1,5 +1,7 @@
 ﻿using App.Kuby.Interfaces.Repositories;
 using App.Kuby.UseCases.Activities.Queries.GetAll;
+using App.Kuby.UseCases.Activities.Queries.GetById;
+using App.Kuby.UseCases.Common;
 using Domain.Kuby.Models;
 using Infrastructure.Kuby.Data.EntitiesConfig;
 using Infrastructure.Kuby.Mapping;
@@ -58,23 +60,38 @@ internal class ActivityRepository : IActivityRepository
 
     public async ValueTask<IReadOnlyCollection<ActivityReadAllResult>> ReadAllAsync(GetAllActivitiesQuery request, CancellationToken token)
     {
-        var times =  await _dbContext.Activity
-                    .Include(c => c.TimeEntry)
-                    .Where(c => c.TimeEntry.Any(i =>
+        var activities = await _dbContext.Activity
+            .Where(a => a.IsActive == request.IsActive)
+            .AsNoTracking().ToListAsync(token).ConfigureAwait(false);
+
+        return activities.Select(a => new ActivityReadAllResult
+        {
+            ActivityId = a.ActivityId,
+            Label = a.Label,
+            IsActive = a.IsActive,
+            CreatedAt = a.CreatedAt,
+        }).ToList();
+    }
+
+    public async ValueTask<IReadOnlyCollection<ActivityReadAllResult>> ReadAllWithTimeEntriesAsync(GetAllTimeEntriesQuery request, CancellationToken token)
+    {
+        var activities = await _dbContext.Activity
+                    .Include(a => a.TimeEntry)
+                    .Where(a => a.IsActive && a.TimeEntry.Any(i =>
                         DateOnly.FromDateTime(i.Start) >= request.DateFrom &&
                         DateOnly.FromDateTime(i.Start) <= request.DateTo &&
                         DateOnly.FromDateTime(i.End) >= request.DateFrom &&
                         DateOnly.FromDateTime(i.End) <= request.DateTo))
                     .AsNoTracking().ToListAsync(token).ConfigureAwait(false);
 
-        return times.Select(c => new ActivityReadAllResult
+        return activities.Select(a => new ActivityReadAllResult
         {
-            ActivityId = c.ActivityId,
-            Label = c.Label,
-            TimeEntries = c.TimeEntry
+            ActivityId = a.ActivityId,
+            Label = a.Label,
+            TimeEntries = a.TimeEntry
                             .Select(timeEntry => timeEntry.MapToTimeEntryReadResult())
                             .ToList(),
-            TotalDuration = TimeSpan.FromTicks(c.TimeEntry.Sum(i => (i.End - i.Start).Ticks)),
+            TotalDuration = TimeSpan.FromTicks(a.TimeEntry.Sum(i => (i.End - i.Start).Ticks)),
         }).ToList();
     }
 
@@ -87,5 +104,16 @@ internal class ActivityRepository : IActivityRepository
             && a.IsActive)
             .Select(a => a.ActivityId)
             .AnyAsync(token).ConfigureAwait(false);
+    }
+
+    public async ValueTask<ActivityReadResult?> ReadAsync(Guid activityId, CancellationToken token)
+    {
+        return await _dbContext.Activity
+            .Where(a => a.ActivityId == activityId && a.IsActive)
+            .Select(a => new ActivityReadResult
+            {
+                ActivityId = a.ActivityId,
+                Label = a.Label
+            }).SingleOrDefaultAsync(token);
     }
 }

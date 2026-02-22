@@ -4,9 +4,9 @@ using Mediator;
 
 namespace App.Kuby.UseCases.Activities.Queries.GetAll;
 
-public class GetAllActivitiesPreProcessor<TMessage, TRespone> : IPipelineBehavior<TMessage, TRespone> where TMessage : GetAllActivitiesQuery where TRespone : IReadOnlyCollection<ActivityReadAllResult>
+public class GetAllTimeEntriesPreProcessor<TMessage, TRespone> : IPipelineBehavior<TMessage, TRespone> where TMessage : GetAllTimeEntriesQuery where TRespone : IReadOnlyCollection<ActivityReadAllResult>
 {
-    private readonly GetAllActivitiesQueryValidator _validator = new();
+    private readonly GetAllTimeEntriesQueryValidator _validator = new();
 
     public async ValueTask<TRespone> Handle(TMessage message, MessageHandlerDelegate<TMessage, TRespone> next, CancellationToken token)
     {
