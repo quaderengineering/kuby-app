@@ -1,4 +1,4 @@
-﻿using App.Kuby.UseCases.Activities.Commands.Common;
+﻿using App.Kuby.UseCases.Activities.Common;
 using Domain.Kuby.Models;
 
 namespace Infrastructure.Kuby.Mapping;
@@ -10,7 +10,7 @@ public static class ActivityMapping
         return new TimeEntriesReadResult
         {
             TimeEntryId = timeEntry.TimeEntryId,
-            TimeId = timeEntry.ActivityId,
+            ActivityId = timeEntry.ActivityId,
             Start = TimeZoneInfo.ConvertTimeFromUtc(timeEntry.Start, TimeZoneInfo.FindSystemTimeZoneById(timeEntry.TimeZoneInfo)),
             End = TimeZoneInfo.ConvertTimeFromUtc(timeEntry.End, TimeZoneInfo.FindSystemTimeZoneById(timeEntry.TimeZoneInfo)),
             Duration = timeEntry.Duration,

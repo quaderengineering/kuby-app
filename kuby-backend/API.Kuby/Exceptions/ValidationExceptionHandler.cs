@@ -35,6 +35,7 @@ internal sealed class ValidationExceptionHandler(
             );
 
         problemDetails.Extensions.Add("errors", errors);
+        problemDetails.Extensions.Add("message", validationException.Message);
 
         await httpContext
             .Response

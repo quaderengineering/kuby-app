@@ -1,10 +1,10 @@
-﻿using App.Kuby.UseCases.Activities.Commands.Common;
+﻿using App.Kuby.UseCases.Activities.Common;
 
 namespace App.Kuby.UseCases.Activities.Queries.GetAll;
 
 public class ActivityReadAllResult
 {
-    public int TimeId { get; set; }
+    public Guid ActivityId { get; set; }
 
     public string Label { get; set; } = string.Empty;
 

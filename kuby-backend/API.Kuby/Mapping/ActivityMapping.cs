@@ -1,5 +1,5 @@
 ﻿using API.Kuby.Models.Activity;
-using App.Kuby.UseCases.Activities.Commands.Common;
+using App.Kuby.UseCases.Activities.Common;
 using App.Kuby.UseCases.Activities.Queries.GetAll;
 using Domain.Kuby.Models;
 
@@ -15,6 +15,7 @@ public static class ActivityMapping
             Label = activity.Label,
             TimeEntry = activity.TimeEntries.Select(t => new TimeEntry
             {
+                ActivityId = activity.ActivityId,
                 TimeEntryId = t.TimeEntryId,
                 Start = t.Start,
                 End = t.End,
@@ -29,7 +30,7 @@ public static class ActivityMapping
     {
         return new ActivityViewModel
         {
-            ActivityId = activityTimeReadAllResult.TimeId,
+            ActivityId = activityTimeReadAllResult.ActivityId,
             Label = activityTimeReadAllResult.Label,
             TimeEntries = activityTimeReadAllResult.TimeEntries.Select(t => t.MapToTimeEntry()).ToList(),
             TotalDuration = activityTimeReadAllResult.TotalDuration,
@@ -41,7 +42,7 @@ public static class ActivityMapping
         return new TimeEntryModel
         {
             TimeEntryId = timeEntryReadResult.TimeEntryId,
-            ActivityId = timeEntryReadResult.TimeId,
+            ActivityId = timeEntryReadResult.ActivityId,
             Duration = timeEntryReadResult.Duration,
             End = timeEntryReadResult.End,
             Start = timeEntryReadResult.Start,

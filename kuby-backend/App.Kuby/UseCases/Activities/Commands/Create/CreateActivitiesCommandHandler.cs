@@ -3,7 +3,7 @@ using Mediator;
 
 namespace App.Kuby.UseCases.Activities.Commands.Create;
 
-public class CreateActivitiesCommandHandler : IRequestHandler<CreateActivitiesCommand, IReadOnlyCollection<int>>
+public class CreateActivitiesCommandHandler : IRequestHandler<CreateActivitiesCommand, IReadOnlyCollection<Guid>>
 {
     private readonly IActivityRepository _activityTimeRepository;
 
@@ -12,10 +12,8 @@ public class CreateActivitiesCommandHandler : IRequestHandler<CreateActivitiesCo
         _activityTimeRepository = activityTimeRepository;
     }
 
-    public ValueTask<IReadOnlyCollection<int>> Handle(CreateActivitiesCommand request, CancellationToken token)
+    public ValueTask<IReadOnlyCollection<Guid>> Handle(CreateActivitiesCommand request, CancellationToken token)
     {
-        return request.UniqueTimes.Any() 
-            ? _activityTimeRepository.CreateActivitiesAsync(request.UniqueTimes, token) 
-            : ValueTask.FromResult<IReadOnlyCollection<int>>([]);
+        return _activityTimeRepository.CreateActivitiesAsync(request.Activity, token);
     }
 }

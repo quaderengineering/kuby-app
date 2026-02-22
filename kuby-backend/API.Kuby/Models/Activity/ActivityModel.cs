@@ -2,7 +2,7 @@
 
 public class ActivityModel
 {
-    public int ActivityId { get; set; }
+    public Guid ActivityId { get; set; }
 
     public string Label { get; set; } = string.Empty;
 

@@ -4,7 +4,7 @@ public class TimeEntryModel
 {
     public int TimeEntryId { get; set; }
 
-    public int ActivityId { get; set; }
+    public Guid ActivityId { get; set; }
 
     public DateTime Start { get; set; }
 

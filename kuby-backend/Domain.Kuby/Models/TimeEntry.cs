@@ -12,6 +12,6 @@ public class TimeEntry
 
     public string TimeZoneInfo { get; set; } = string.Empty;
 
-    public int ActivityId { get; set; }
+    public Guid ActivityId { get; set; }
     public Activity? Activity { get; set; }
 }

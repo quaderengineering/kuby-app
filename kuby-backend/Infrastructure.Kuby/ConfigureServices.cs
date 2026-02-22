@@ -17,6 +17,7 @@ public static class ConfigureServices
 
         // Repositories
         services.AddScoped<IActivityRepository, ActivityRepository>();
+        services.AddScoped<ITimeEntryRepository, TimeEntryRepository>();
 
         CreateDbConfigurations(services);
     }

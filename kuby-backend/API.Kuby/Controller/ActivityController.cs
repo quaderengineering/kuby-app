@@ -1,6 +1,7 @@
 ﻿using API.Kuby.Mapping;
 using API.Kuby.Models.Activity;
 using App.Kuby.UseCases.Activities.Commands.Create;
+using App.Kuby.UseCases.Activities.Commands.Import;
 using App.Kuby.UseCases.Activities.Queries.GetAll;
 using FluentValidation;
 using Mediator;
@@ -24,9 +25,20 @@ public class ActivityController : ControllerBase
 
     [HttpPost]
     [SwaggerResponseHeader(StatusCodes.Status201Created, "activity created", "int", "")]
+    [SwaggerResponseHeader(StatusCodes.Status400BadRequest, "Validation errors occured", nameof(ValidationException), "")]
     public async Task<ActionResult<int>> PostAsync([FromBody] IReadOnlyCollection<ActivityModel> activityModels, CancellationToken token)
     {
         var query = new CreateActivitiesCommand([.. activityModels.Select(ActivityMapping.MapToDomainModel)]);
+        var result = await _mediator.Send<IReadOnlyCollection<Guid>>(query, token);
+        return Ok(result);
+    }
+
+    [HttpPost("import-cube-data")]
+    [SwaggerResponseHeader(StatusCodes.Status201Created, "activity created", nameof(CubeImportResult), "")]
+    [SwaggerResponseHeader(StatusCodes.Status400BadRequest, "Validation errors occured", nameof(ValidationException), "")]
+    public async Task<ActionResult<CubeImportResult>> ImportCubeDataAsync([FromBody] IReadOnlyCollection<ActivityModel> activityModels, CancellationToken token)
+    {
+        var query = new ImportActivitiesCommand(activityModels.Select(a => a.MapToDomainModel()).ToList());
         var result = await _mediator.Send<IReadOnlyCollection<int>>(query, token);
         return Ok(result);
     }

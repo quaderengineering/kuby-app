@@ -1,5 +1,5 @@
 ﻿using App.Kuby.Interfaces.Repositories;
-using App.Kuby.UseCases.Activities.Commands.Common;
+using App.Kuby.UseCases.Activities.Common;
 using App.Kuby.UseCases.Activities.Queries.GetAll;
 using Domain.Kuby.Models;
 using Infrastructure.Kuby.Data.EntitiesConfig;
@@ -17,30 +17,18 @@ internal class ActivityRepository : IActivityRepository
         _dbContext = dbContext;
     }
 
-    public async ValueTask<IReadOnlyCollection<int>> CreateActivitiesAsync(IReadOnlyCollection<Activity> activities, CancellationToken token)
+    public async ValueTask<IReadOnlyCollection<Guid>> CreateActivitiesAsync(IReadOnlyCollection<Activity> activities, CancellationToken token)
     {
         await _dbContext.AddRangeAsync(activities, token).ConfigureAwait(false);
         await _dbContext.SaveChangesAsync(token).ConfigureAwait(false);
         return activities.Select(a => a.ActivityId).ToList();
     }
 
-    public async ValueTask<IReadOnlyCollection<TimeEntriesReadResult>> ReadTimeEntriesByRangeAsync(DateTime dateFrom, DateTime dateTo, CancellationToken token)
+    public async ValueTask<IReadOnlyCollection<Activity>> ReadActivitiesAsync(IReadOnlyCollection<Guid> activityIds, CancellationToken token)
     {
-        var query = from c in _dbContext.Activity
-                    join i in _dbContext.TimeEntry
-                        on c.ActivityId equals i.ActivityId
-
-                    where i.Start >= dateFrom && i.Start <= dateTo
-                    && i.End >= dateFrom && i.Start <= dateTo
-
-                    select new TimeEntriesReadResult
-                    {
-                        TimeEntryId = i.TimeEntryId,
-                        End = i.End,
-                        Start = i.Start,
-                    };
-
-        return await query.AsNoTracking().ToListAsync(token).ConfigureAwait(false);
+       return await _dbContext.Activity
+            .Where(a => activityIds.Contains(a.ActivityId))
+            .AsNoTracking().ToListAsync(token).ConfigureAwait(false);
     }
 
     public async ValueTask<IReadOnlyCollection<ActivityReadAllResult>> ReadAllAsync(GetAllActivitiesQuery request, CancellationToken token)
@@ -56,7 +44,7 @@ internal class ActivityRepository : IActivityRepository
 
         return times.Select(c => new ActivityReadAllResult
         {
-            TimeId = c.ActivityId,
+            ActivityId = c.ActivityId,
             Label = c.Label,
             TimeEntries = c.TimeEntry
                             .Select(timeEntry => timeEntry.MapToTimeEntryReadResult())

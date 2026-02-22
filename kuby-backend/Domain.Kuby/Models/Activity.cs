@@ -2,7 +2,7 @@
 
 public class Activity
 {
-    public int ActivityId { get; set; }
+    public Guid ActivityId { get; set; } = Guid.CreateVersion7();
 
     public string Label { get; set; } = string.Empty;
 

@@ -1,4 +1,4 @@
-﻿using App.Kuby.UseCases.Activities.Commands.Create;
+﻿using App.Kuby.UseCases.Activities.Commands.Import;
 using App.Kuby.UseCases.Activities.Queries.GetAll;
 using Mediator;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +14,7 @@ public static class ConfigureServices
             options.ServiceLifetime = ServiceLifetime.Scoped;
         });
 
-        services.AddScoped(typeof(IPipelineBehavior<CreateActivitiesCommand, IReadOnlyCollection<int>>), typeof(CreateActivitiesPreProcessor<CreateActivitiesCommand, IReadOnlyCollection<int>>));
+        services.AddScoped(typeof(IPipelineBehavior<ImportActivitiesCommand, IReadOnlyCollection<int>>), typeof(ImportActivitiesCommandPreProcessor<ImportActivitiesCommand, IReadOnlyCollection<int>>));
         services.AddScoped(typeof(IPipelineBehavior<GetAllActivitiesQuery, IReadOnlyCollection<ActivityReadAllResult>>), typeof(GetAllActivitiesPreProcessor<GetAllActivitiesQuery, IReadOnlyCollection<ActivityReadAllResult>>));
     }
 }
