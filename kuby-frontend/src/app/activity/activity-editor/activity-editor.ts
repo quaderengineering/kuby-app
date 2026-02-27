@@ -30,6 +30,10 @@ export class ActivityEditor {
 
   public readonly onSubmitData = output<ActivityModel>();
 
+  public readonly dialogTitle = computed(() =>
+    this.activity() ? 'Aktivität bearbeiten' : 'Aktivität Erstellen'
+  );
+
   public readonly editActivity = linkedSignal<ActivityModel>(
     () => this.activity() || this.getDefaultModel()
   );

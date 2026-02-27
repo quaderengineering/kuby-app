@@ -36,8 +36,6 @@ export class Activity {
 
   public readonly activities$: Observable<ActivityViewModel[]>;
 
-  public readonly selectedActivities = signal<ActivityViewModel[]>([]);
-
   public readonly isEditorOpen = signal(false);
 
   public readonly activityToEdit = signal<ActivityModel | undefined>(undefined);
@@ -66,6 +64,7 @@ export class Activity {
   }
 
   public onAdd(): void {
+    this.activityToEdit.set(undefined);
     this.isEditorOpen.set(true);
   }
 

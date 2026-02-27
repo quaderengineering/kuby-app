@@ -5,6 +5,9 @@
   resizable="false"
   (visibleChange)="onCancel()"
 >
+  <ng-template #header>
+    <h3>{{ dialogTitle() }}</h3>
+  </ng-template>
   <p-floatlabel variant="on" class="label">
     <input
       pInputText
@@ -15,8 +18,10 @@
     />
     <label for="label">Bezeichnung</label>
   </p-floatlabel>
-  <div class="buttons">
-    <button type="button" pButton (click)="onSubmit()">Speichern</button>
-    <button type="button" pButton text (click)="onCancel()">Abbrechen</button>
-  </div>
+  <ng-template #footer>
+    <div class="buttons">
+      <button type="button" pButton (click)="onSubmit()">Speichern</button>
+      <button type="button" pButton text (click)="onCancel()">Abbrechen</button>
+    </div>
+  </ng-template>
 </p-dialog>

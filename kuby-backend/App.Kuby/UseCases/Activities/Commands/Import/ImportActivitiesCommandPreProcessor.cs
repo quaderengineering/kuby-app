@@ -1,6 +1,8 @@
-﻿using App.Kuby.Interfaces.Repositories;
+﻿using System.Diagnostics;
+using App.Kuby.Interfaces.Repositories;
 using App.Kuby.UseCases.Activities.Common;
 using Domain.Kuby.Models;
+using Domain.Kuby.Validators.TimeEntryValidator.RuleProvider.Create;
 using FluentValidation;
 using Mediator;
 
@@ -8,6 +10,7 @@ namespace App.Kuby.UseCases.Activities.Commands.Import;
 
 public class ImportActivitiesCommandPreProcessor<TMessage, TResponse> : IPipelineBehavior<TMessage, TResponse> where TMessage : ImportActivitiesCommand
 {
+    private readonly CreateTimeEntryValidator _validator = new();
     private readonly IActivityRepository _activityRepository;
     private readonly ITimeEntryRepository _timeEntryRepository;
 
@@ -27,12 +30,29 @@ public class ImportActivitiesCommandPreProcessor<TMessage, TResponse> : IPipelin
             throw new ValidationException($"No matching Activities were found.");
 
         var timeEntries = message.Activities.SelectMany(a => a.TimeEntry).ToList();
-        var timeEntriesByRange = await _timeEntryRepository
+        var dbTimeEntriesByRange = await _timeEntryRepository
             .ReadTimeEntriesByRangeAsync(GetMinDate(timeEntries), GetMaxDate(timeEntries), token).ConfigureAwait(false);
 
-        message.TimeEntriesToCreate = timeEntries.Where(t => !DoesTimeEntryExist(timeEntriesByRange, t)).ToList();
+        ValidateOverlapping(timeEntries);
+
+        message.TimeEntriesToCreate = timeEntries.Where(t => !DoesTimeEntryExist(dbTimeEntriesByRange, t)).ToList();
 
         return await next(message, token).ConfigureAwait(false);
+    }
+
+    private void ValidateOverlapping(IReadOnlyCollection<TimeEntry> timeEntries)
+    {
+        var sorted = timeEntries.OrderBy(te => te.Start).ToList();
+
+        for (int i = 0; i < sorted.Count - 1; i++)
+        {
+            var current = sorted[i];
+            var next = sorted[i + 1];
+
+            if (current.End > next.Start)
+                //should be handlet in domain
+                throw new ValidationException("Zeiten dürfen sich nicht überlappen.");
+        }
     }
 
     private DateTime GetMinDate(IReadOnlyCollection<TimeEntry> timeEntries)
