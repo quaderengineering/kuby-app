@@ -1,23 +1,27 @@
 @if (activities(); as activities) {
 <p-contextmenu
   #cm
+  [ngClass]="hideContextMenu() ? 'hide' : ''"
   [model]="contextMenuCommands()"
   (onShow)="onContextMenuShow()"
   (onHide)="onContextMenuHide()"
 />
+<!-- #table -->
+<!-- [customSort]="true"
+(sortFunction)="customSort($event)" -->
 <p-table
   scrollHeight="flex"
   [value]="activities"
   [scrollable]="true"
   [contextMenu]="cm"
-  [selection]="selectedActivity"
+  [(selection)]="selectedActivity"
   [(contextMenuSelection)]="selectedActivity"
 >
   <ng-template #header>
     <tr>
-      <th>Label</th>
+      <th pSortableColumn="label">Label <p-sortIcon field="label" /></th>
       <th>Status</th>
-      <th>Erstellt am</th>
+      <th pSortableColumn="createdAt">Erstellt am <p-sortIcon field="createdAt" /></th>
       <th></th>
     </tr>
   </ng-template>
@@ -35,7 +39,7 @@
           appendTo="body"
           (onShow)="onMenuShow(activity)"
         />
-        <p-button severity="secondary" (click)="menu.toggle($event)" icon="pi pi-ellipsis-v" />
+        <p-button severity="secondary" (onClick)="cm.toggle($event)" icon="pi pi-ellipsis-v" />
       </td>
     </tr>
     } @else {

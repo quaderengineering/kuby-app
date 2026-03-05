@@ -1,4 +1,5 @@
 <div class="date-wrapper">
+  <!-- TODO: needs toggle with change of datepicker -->
   <p-datepicker
     class="datepicker"
     [ngModel]="date$ | async"
@@ -31,8 +32,24 @@
     Heute
   </button>
 </div>
-@if ((activityModels$ | async); as activityModels) {
-<div class="table-wrapper">
+@if ((activities$ | async); as activities) {
+
+<!-- @switch (currentView()) {
+      @case ('day') { -->
+<app-day-view [activities]="activities" [selectedDate]="date$.value" />
+<!-- } -->
+<!-- @case ('week') { -->
+<!-- <app-week-view 
+          [activities]="activities"
+          [selectedDate]="selectedDate()"
+        /> -->
+<!-- }
+      @case ('month') { -->
+<!-- <app-month-view [activities]="activities"></app-month-view> -->
+<!-- }
+    } -->
+
+<!-- <div class="table-wrapper">
   <p-table
     class="table"
     [value]="activityModels"
@@ -74,7 +91,7 @@
       }
     </ng-template>
   </p-table>
-</div>
+</div> -->
 } @if((rawActivityModels$ | async); as rawActivityModels) {
 <!-- TODO: place it in root -->
 <p-dialog [visible]="false" [modal]="true" closable="false">

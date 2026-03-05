@@ -1,0 +1,62 @@
+<!-- <div class="month-view">
+  @if (activities(); as data) { -->
+<!-- Month summary -->
+<!-- <div class="month-summary">
+    <h3>Monat Gesamt: {{ data.totalDuration }}</h3>
+
+    <div class="activity-totals">
+      @for (activity of data.activityTotals; track activity.activityId) {
+      <div class="activity-chip">
+        <span class="color-dot" [style.background-color]="activity.color"></span>
+        <span>{{ activity.name }}: {{ activity.totalHours }}h</span>
+      </div>
+      }
+    </div>
+  </div> -->
+
+<!-- Calendar grid -->
+<!-- <div class="calendar-container"> -->
+<!-- Weekday headers -->
+<!-- <div class="calendar-header">
+      <div class="weekday">Mo</div>
+      <div class="weekday">Di</div>
+      <div class="weekday">Mi</div>
+      <div class="weekday">Do</div>
+      <div class="weekday">Fr</div>
+      <div class="weekday">Sa</div>
+      <div class="weekday">So</div>
+    </div> -->
+
+<!-- Calendar days -->
+<!-- <div class="calendar-grid">
+      @for (day of data.days; track $index) {
+      <div
+        class="calendar-day"
+        [class.has-data]="day.date && day.totalHours > 0"
+        [class.today]="day.date && isToday(day.date)"
+        [class.empty]="!day.date"
+        [style.background-color]="day.date ? getHeatmapColor(day.totalHours) : 'transparent'"
+        (click)="day.date && showDayDetails(day)"
+      >
+        @if (day.date) {
+        <span class="day-number">{{ day.date | date : 'd' }}</span>
+        @if (day.totalHours > 0) {
+        <span class="hours-badge">{{ day.totalHours }}h</span>
+        } }
+      </div>
+      }
+    </div> -->
+
+<!-- Legend -->
+<!-- <div class="heatmap-legend">
+      <span>Weniger</span>
+      <div class="legend-item" [style.background-color]="'#e8f5e9'"></div>
+      <div class="legend-item" [style.background-color]="'#a5d6a7'"></div>
+      <div class="legend-item" [style.background-color]="'#66bb6a'"></div>
+      <div class="legend-item" [style.background-color]="'#43a047'"></div>
+      <div class="legend-item" [style.background-color]="'#2e7d32'"></div>
+      <span>Mehr</span>
+    </div>
+  </div>
+  }
+</div> -->

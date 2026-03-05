@@ -5,6 +5,7 @@ import {
   RtcTime,
   ActivityModelFE,
   TimeEntryEditForm,
+  MonthViewModel,
 } from './dashboard.models';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, EMPTY, map, Observable, of, switchMap, tap } from 'rxjs';
@@ -31,6 +32,8 @@ import {
   TimeEntryModel,
 } from '../services/api-service';
 import { SelectModule } from 'primeng/select';
+import { MonthView } from './month-view/month-view';
+import { DayView } from './day-view/day-view';
 
 @Component({
   selector: 'app-dashboard',
@@ -44,6 +47,8 @@ import { SelectModule } from 'primeng/select';
     DialogModule,
     ReactiveFormsModule,
     SelectModule,
+    DayView,
+    MonthView,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -55,7 +60,7 @@ export class Dashboard implements OnInit {
 
   public date$ = new BehaviorSubject<Date>(new Date());
 
-  public activityModels$?: Observable<ActivityViewModel[]>;
+  public activities$?: Observable<ActivityViewModel[]>;
 
   public rawActivityModels$ = new BehaviorSubject<ActivityModelFE[] | undefined>(undefined);
 
@@ -102,7 +107,7 @@ export class Dashboard implements OnInit {
       )
       .subscribe();
 
-    this.activityModels$ = this.searchCriteria.pipe(
+    this.activities$ = this.searchCriteria.pipe(
       takeUntilDestroyed(this.destroyRef),
       switchMap((criteria) =>
         this.timeEntryService.search(criteria).pipe(
