@@ -4,8 +4,8 @@
     class="datepicker"
     [ngModel]="date$ | async"
     (ngModelChange)="onDateChange($event)"
-    view="month"
-    dateFormat="MM yy"
+    view="date"
+    dateFormat="dd MM yy"
     [readonlyInput]="true"
   />
   <button
@@ -39,10 +39,7 @@
 <app-day-view [activities]="activities" [selectedDate]="date$.value" />
 <!-- } -->
 <!-- @case ('week') { -->
-<!-- <app-week-view 
-          [activities]="activities"
-          [selectedDate]="selectedDate()"
-        /> -->
+<app-week-view [activities]="activities" [selectedDate]="date$.value" />
 <!-- }
       @case ('month') { -->
 <!-- <app-month-view [activities]="activities"></app-month-view> -->

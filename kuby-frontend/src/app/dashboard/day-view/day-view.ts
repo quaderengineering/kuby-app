@@ -29,8 +29,6 @@ export class DayView implements OnChanges {
     const dayStart = new Date(date.setHours(0, 0, 0, 0));
     const dayEnd = new Date(date.setHours(23, 59, 59, 999));
 
-    console.log('activites', activities);
-
     const activityDetails = activities
       .map((activity) => {
         // Filter entries for this specific day
@@ -71,8 +69,6 @@ export class DayView implements OnChanges {
         return a;
       })
       .filter((a) => a.timeEntries.length > 0); // Only show activities with entries
-
-    // console.log(activityDetails);
 
     const totalMs = activityDetails.reduce((sum, a) => {
       return (

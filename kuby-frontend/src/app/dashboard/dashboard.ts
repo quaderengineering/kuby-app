@@ -34,6 +34,7 @@ import {
 import { SelectModule } from 'primeng/select';
 import { MonthView } from './month-view/month-view';
 import { DayView } from './day-view/day-view';
+import {WeekView} from './week-view/week-view';
 
 @Component({
   selector: 'app-dashboard',
@@ -48,6 +49,7 @@ import { DayView } from './day-view/day-view';
     ReactiveFormsModule,
     SelectModule,
     DayView,
+    WeekView,
     MonthView,
   ],
   templateUrl: './dashboard.html',

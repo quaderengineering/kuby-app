@@ -1,1 +1,57 @@
-<p>week-view works!</p>
+<div class="week-view">
+  @if (viewModel(); as viewModel) {
+    <div class="week-summary">
+      <h3>Woche Gesamt: {{ viewModel.totalDuration }}</h3>
+      <div class="activity-totals">
+        @for (activity of viewModel.activityTotals; track activity.activityId) {
+          <div class="activity-total-bar">
+            <div class="activity-info">
+                  <span
+                    class="color-dot"
+                    [style.background-color]="activity.color"
+                  ></span>
+              <span>{{ activity.name }}</span>
+            </div>
+            <div class="bar-container">
+              <div
+                class="bar-fill"
+                [style.width.%]="activity.percentage"
+                [style.background-color]="activity.color"
+              >
+                {{ activity.totalHours }}h
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="week-grid">
+      @for (day of viewModel.days; track day.date) {
+        <div class="day-card">
+          <div class="day-header">
+            <div class="day-name">{{ day.date | date: 'EEE' }}</div>
+            <div class="day-number">{{ day.date | date: 'd' }}</div>
+          </div>
+
+          <div class="total-hours">
+            {{ day.totalHours }}h
+          </div>
+
+          <div class="activities-list">
+            @for (activity of day.activities; track activity.activityId) {
+              <div class="activity-item">
+                    <span
+                      class="color-dot"
+                      [style.background-color]="activity.color"
+                    ></span>
+                <span class="activity-name">{{ activity.name }}</span>
+                <span class="hours">{{ activity.hours }}h</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
