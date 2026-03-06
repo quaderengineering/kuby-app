@@ -1,6 +1,6 @@
-import {Component, input, OnChanges, OnInit, signal} from '@angular/core';
+import {Component, input, OnChanges, signal} from '@angular/core';
 import {ActivityViewModel} from '../../services/api-service';
-import {DaySummary, DayViewModel, WeekViewModel} from '../dashboard.models';
+import {DaySummary, WeekViewModel} from '../dashboard.models';
 import {CommonModule} from '@angular/common';
 
 @Component({

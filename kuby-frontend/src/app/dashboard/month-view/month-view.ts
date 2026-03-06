@@ -1,7 +1,7 @@
 import {Component, input, OnChanges, signal} from '@angular/core';
-import {ActivityTotal, DayViewModel, MonthDay, MonthViewModel} from '../dashboard.models';
-import { ActivityViewModel } from '../../services/api-service';
-import { DatePipe } from '@angular/common';
+import {ActivityTotal, MonthDay, MonthViewModel} from '../dashboard.models';
+import {ActivityViewModel} from '../../services/api-service';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-month-view',
@@ -9,7 +9,7 @@ import { DatePipe } from '@angular/common';
   templateUrl: './month-view.html',
   styleUrl: './month-view.scss',
 })
-export class MonthView implements OnChanges{
+export class MonthView implements OnChanges {
   public readonly activities = input.required<ActivityViewModel[]>();
   public readonly selectedDate = input.required<Date>();
 
@@ -47,7 +47,7 @@ export class MonthView implements OnChanges{
     // Add padding for days before month starts
     const startPadding = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
     for (let i = 0; i < startPadding; i++) {
-      days.push({ date: null, totalHours: 0, activities: [] });
+      days.push({date: null, totalHours: 0, activities: []});
     }
 
     // Add actual month days

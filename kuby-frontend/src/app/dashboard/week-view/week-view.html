@@ -7,16 +7,16 @@
           <div class="activity-total-bar">
             <div class="activity-info">
                   <span
-                    class="color-dot"
                     [style.background-color]="activity.color"
+                    class="color-dot"
                   ></span>
               <span>{{ activity.name }}</span>
             </div>
             <div class="bar-container">
               <div
-                class="bar-fill"
-                [style.width.%]="activity.percentage"
                 [style.background-color]="activity.color"
+                [style.width.%]="activity.percentage"
+                class="bar-fill"
               >
                 {{ activity.totalHours }}h
               </div>
@@ -42,8 +42,8 @@
             @for (activity of day.activities; track activity.activityId) {
               <div class="activity-item">
                     <span
-                      class="color-dot"
                       [style.background-color]="activity.color"
+                      class="color-dot"
                     ></span>
                 <span class="activity-name">{{ activity.name }}</span>
                 <span class="hours">{{ activity.hours }}h</span>

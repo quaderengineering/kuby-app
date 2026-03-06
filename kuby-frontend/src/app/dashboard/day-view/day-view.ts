@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, input, OnChanges, signal } from '@angular/core';
-import { ActivityViewModel } from '../../services/api-service';
-import { ActivityDayDetail, DayViewModel } from '../dashboard.models';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { CommonModule } from '@angular/common';
+import {Component, input, OnChanges, signal} from '@angular/core';
+import {ActivityViewModel} from '../../services/api-service';
+import {ActivityDayDetail, DayViewModel} from '../dashboard.models';
+import {TableModule} from 'primeng/table';
+import {ButtonModule} from 'primeng/button';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-day-view',
