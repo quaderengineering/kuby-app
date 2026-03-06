@@ -1,23 +1,23 @@
-<!-- <div class="month-view">
-  @if (activities(); as data) { -->
+<div class="month-view">
+  @if (viewModel(); as viewModel) {
 <!-- Month summary -->
-<!-- <div class="month-summary">
-    <h3>Monat Gesamt: {{ data.totalDuration }}</h3>
+ <div class="month-summary">
+    <h3>Monat Gesamt: {{ viewModel.totalDuration }}</h3>
 
     <div class="activity-totals">
-      @for (activity of data.activityTotals; track activity.activityId) {
+      @for (activity of viewModel.activityTotals; track activity.activityId) {
       <div class="activity-chip">
         <span class="color-dot" [style.background-color]="activity.color"></span>
         <span>{{ activity.name }}: {{ activity.totalHours }}h</span>
       </div>
       }
     </div>
-  </div> -->
+  </div>
 
 <!-- Calendar grid -->
-<!-- <div class="calendar-container"> -->
+ <div class="calendar-container">
 <!-- Weekday headers -->
-<!-- <div class="calendar-header">
+ <div class="calendar-header">
       <div class="weekday">Mo</div>
       <div class="weekday">Di</div>
       <div class="weekday">Mi</div>
@@ -25,18 +25,17 @@
       <div class="weekday">Fr</div>
       <div class="weekday">Sa</div>
       <div class="weekday">So</div>
-    </div> -->
+    </div>
 
 <!-- Calendar days -->
-<!-- <div class="calendar-grid">
-      @for (day of data.days; track $index) {
+<div class="calendar-grid">
+      @for (day of viewModel.days; track $index) {
       <div
         class="calendar-day"
         [class.has-data]="day.date && day.totalHours > 0"
         [class.today]="day.date && isToday(day.date)"
         [class.empty]="!day.date"
         [style.background-color]="day.date ? getHeatmapColor(day.totalHours) : 'transparent'"
-        (click)="day.date && showDayDetails(day)"
       >
         @if (day.date) {
         <span class="day-number">{{ day.date | date : 'd' }}</span>
@@ -45,10 +44,10 @@
         } }
       </div>
       }
-    </div> -->
+    </div>
 
 <!-- Legend -->
-<!-- <div class="heatmap-legend">
+ <div class="heatmap-legend">
       <span>Weniger</span>
       <div class="legend-item" [style.background-color]="'#e8f5e9'"></div>
       <div class="legend-item" [style.background-color]="'#a5d6a7'"></div>
@@ -59,4 +58,4 @@
     </div>
   </div>
   }
-</div> -->
+</div>
