@@ -1,5 +1,16 @@
-import { FormControl } from '@angular/forms';
-import { ActivityModel } from '../services/api-service';
+import {FormControl} from '@angular/forms';
+import {ActivityModel} from '../services/api-service';
+
+export enum DateRangeMode {
+  DAY = 0,
+  WEEK,
+  MONTH,
+}
+
+export interface DateRange {
+  value: number;
+  label: string;
+}
 
 export interface RtcTime {
   year: number;

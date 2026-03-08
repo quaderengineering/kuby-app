@@ -1,36 +1,43 @@
 <div class="date-wrapper">
   <!-- TODO: needs toggle with change of datepicker -->
   <p-datepicker
-    class="datepicker"
-    [ngModel]="date$ | async"
     (ngModelChange)="onDateChange($event)"
-    view="date"
-    dateFormat="dd MM yy"
+    [ngModel]="date$ | async"
     [readonlyInput]="true"
-  />
+    [view]="viewForDatePicker()"
+    class="datepicker"
+    dateFormat="dd MM yy"
+  ></p-datepicker>
   <button
-    type="button"
-    pButton
-    pRipple
-    text
-    rounded
-    plain
-    icon="pi pi-arrow-left"
     (click)="onChangeMonth(-1)"
-  ></button>
-  <button
-    type="button"
+    icon="pi pi-arrow-left"
     pButton
     pRipple
-    text
-    rounded
     plain
-    icon="pi pi-arrow-right"
-    (click)="onChangeMonth(1)"
+    rounded
+    text
+    type="button"
   ></button>
-  <button type="button" pButton pRipple text rounded plain (click)="onChangeDateToToday()">
+  <button
+    (click)="onChangeMonth(1)"
+    icon="pi pi-arrow-right"
+    pButton
+    pRipple
+    plain
+    rounded
+    text
+    type="button"
+  ></button>
+  <button (click)="onChangeDateToToday()" pButton pRipple plain rounded text type="button">
     Heute
   </button>
+</div>
+<div>
+  <p-select-button [(ngModel)]="selectedDateRangeMode"
+                   [options]="dateRanges()"
+                   optionLabel="label"
+                   optionValue="value">
+  </p-select-button>
 </div>
 @if ((activities$ | async); as activities) {
 
@@ -91,17 +98,17 @@
 </div> -->
 } @if((rawActivityModels$ | async); as rawActivityModels) {
 <!-- TODO: place it in root -->
-<p-dialog [visible]="false" [modal]="true" closable="false">
+<p-dialog [modal]="true" [visible]="false" closable="false">
   <ng-template #header>
     <h2>Anpassungen der Zeitdaten</h2>
   </ng-template>
   <!-- content -->
   <p-table
-    [value]="rawActivityModels"
-    sortMode="single"
-    rowGroupMode="subheader"
-    groupRowsBy="label"
     [tableStyle]="{ 'min-width': '60rem' }"
+    [value]="rawActivityModels"
+    groupRowsBy="label"
+    rowGroupMode="subheader"
+    sortMode="single"
   >
     <ng-template #header>
       <tr>
@@ -127,10 +134,10 @@
           @if(isEditing(timeEntry) && editForm) {
           <p-datepicker
             [formControl]="startControl"
-            [showTime]="true"
             [showSeconds]="true"
-            hourFormat="24"
+            [showTime]="true"
             appendTo="body"
+            hourFormat="24"
           />
           } @else {
           {{ timeEntry.start | date : 'dd.MM.yyyy HH:mm:ss' }}
@@ -140,10 +147,10 @@
           @if(isEditing(timeEntry) && editForm) {
           <p-datepicker
             [formControl]="endControl"
-            [showTime]="true"
             [showSeconds]="true"
-            hourFormat="24"
+            [showTime]="true"
             appendTo="body"
+            hourFormat="24"
           />
           } @else {
           {{ timeEntry.end | date : 'dd.MM.yyyy HH:mm:ss' }}
@@ -152,9 +159,9 @@
         <td>
           @if(isEditing(timeEntry) && editForm) {
           <p-select
-            [options]="timeZones"
-            [formControl]="timeZoneControl"
             [filter]="true"
+            [formControl]="timeZoneControl"
+            [options]="timeZones"
             appendTo="body"
           >
           </p-select>
@@ -166,35 +173,35 @@
           <div>
             @if(!isEditing(timeEntry)) {
             <button
-              pButton
-              pRipple
-              type="button"
               (click)="startEdit(timeEntry)"
               icon="pi pi-pencil"
-              text
+              pButton
+              pRipple
               rounded
               severity="secondary"
+              text
+              type="button"
             ></button>
             } @else {
             <button
-              pButton
-              pRipple
-              type="button"
               (click)="saveEdit(timeEntry)"
               icon="pi pi-check"
-              text
-              rounded
-              severity="success"
-            ></button>
-            <button
               pButton
               pRipple
+              rounded
+              severity="success"
+              text
               type="button"
+            ></button>
+            <button
               (click)="cancelEdit()"
               icon="pi pi-times"
-              text
+              pButton
+              pRipple
               rounded
               severity="danger"
+              text
+              type="button"
             ></button>
             }
           </div>
@@ -205,10 +212,10 @@
   </p-table>
   <ng-template #footer>
     <p-button
+      (click)="onModalSave()"
+      [disabled]="isModalInEditMode()"
       label="Speichern"
       severity="primary"
-      [disabled]="isModalInEditMode()"
-      (click)="onModalSave()"
     />
   </ng-template>
 </p-dialog>

@@ -1,28 +1,23 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import {Component, computed, DestroyRef, inject, OnInit, signal} from '@angular/core';
 import {
-  TimeEntryModelFE,
+  ActivityModelFE,
+  DateRange,
+  DateRangeMode,
   McuTimeModel,
   RtcTime,
-  ActivityModelFE,
   TimeEntryEditForm,
-  MonthViewModel,
+  TimeEntryModelFE,
 } from './dashboard.models';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, catchError, EMPTY, map, Observable, of, switchMap, tap } from 'rxjs';
-import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { Ripple } from 'primeng/ripple';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DatePickerModule, DatePickerMonthChangeEvent } from 'primeng/datepicker';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { DialogModule } from 'primeng/dialog';
+import {HttpClient} from '@angular/common/http';
+import {BehaviorSubject, catchError, EMPTY, map, Observable, of, switchMap, tap} from 'rxjs';
+import {CommonModule} from '@angular/common';
+import {TableModule} from 'primeng/table';
+import {ButtonModule} from 'primeng/button';
+import {Ripple} from 'primeng/ripple';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {DatePickerModule} from 'primeng/datepicker';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule,} from '@angular/forms';
+import {DialogModule} from 'primeng/dialog';
 import {
   ActivityClient,
   ActivityModel,
@@ -31,10 +26,9 @@ import {
   TimeEntryClient,
   TimeEntryModel,
 } from '../services/api-service';
-import { SelectModule } from 'primeng/select';
-import { MonthView } from './month-view/month-view';
-import { DayView } from './day-view/day-view';
-import {WeekView} from './week-view/week-view';
+import {SelectModule} from 'primeng/select';
+import {MonthView} from './month-view/month-view';
+import {SelectButton} from 'primeng/selectbutton';
 
 @Component({
   selector: 'app-dashboard',
@@ -48,9 +42,8 @@ import {WeekView} from './week-view/week-view';
     DialogModule,
     ReactiveFormsModule,
     SelectModule,
-    DayView,
-    WeekView,
     MonthView,
+    SelectButton,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -61,12 +54,28 @@ export class Dashboard implements OnInit {
   public readonly modalVisible = signal(false);
 
   public date$ = new BehaviorSubject<Date>(new Date());
-
   public activities$?: Observable<ActivityViewModel[]>;
-
   public rawActivityModels$ = new BehaviorSubject<ActivityModelFE[] | undefined>(undefined);
-
   public editForm: FormGroup<TimeEntryEditForm> | null = null;
+
+  public readonly dateRanges = signal(this.getDateRanges());
+  public readonly selectedDateRangeMode = signal<DateRangeMode>(DateRangeMode.WEEK);
+  public readonly viewForDatePicker = computed(() => this.selectedDateRangeMode() === DateRangeMode.MONTH ? "month" : "date");
+
+  protected timeZones = Intl.supportedValuesOf('timeZone');
+
+  private searchCriteria = new BehaviorSubject<ActivityTimeEntrySearchModel>({
+    dateFrom: this.getDefaultDateFrom(),
+    dateTo: this.getDefaultDateTo(),
+  });
+
+  private timeEntryIdCounter = 0;
+  private editingTimeEntryId: number | undefined = undefined;
+
+  private readonly activityService = inject(ActivityClient);
+  private readonly timeEntryService = inject(TimeEntryClient);
+  private readonly http = inject(HttpClient);
+  private readonly destroyRef = inject(DestroyRef);
 
   public get startControl(): FormControl<Date | undefined | null> {
     return this.editForm!.controls.start;
@@ -79,22 +88,6 @@ export class Dashboard implements OnInit {
   public get timeZoneControl(): FormControl<string | undefined | null> {
     return this.editForm!.controls.timeZoneInfo;
   }
-
-  protected timeZones = Intl.supportedValuesOf('timeZone');
-
-  private searchCriteria = new BehaviorSubject<ActivityTimeEntrySearchModel>({
-    dateFrom: this.getDefaultDateFrom(),
-    dateTo: this.getDefaultDateTo(),
-  });
-
-  private timeEntryIdCounter = 0;
-
-  private editingTimeEntryId: number | undefined = undefined;
-
-  private readonly activityService = inject(ActivityClient);
-  private readonly timeEntryService = inject(TimeEntryClient);
-  private readonly http = inject(HttpClient);
-  private readonly destroyRef = inject(DestroyRef);
 
   public ngOnInit() {
     this.http
@@ -216,6 +209,10 @@ export class Dashboard implements OnInit {
 
   public stringToDate(stringDate: string): Date {
     return new Date(stringDate);
+  }
+
+  private getDateRanges(): DateRange[] {
+    return [{value: DateRangeMode.DAY, label: "Tag"},{value: DateRangeMode.WEEK, label: "Woche"},{value: DateRangeMode.MONTH, label: "Monat"}]
   }
 
   private mapFromMcu(mcu: McuTimeModel): ActivityModelFE {
