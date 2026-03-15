@@ -1,21 +1,11 @@
-import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectorRef,
-  Component,
-  computed,
-  inject,
-  input,
-  linkedSignal,
-  output,
-  signal,
-  viewChild,
-} from '@angular/core';
-import { Table, TableModule } from 'primeng/table';
-import { ActivityViewModel } from '../../services/api-service';
-import { ContextMenu, ContextMenuModule } from 'primeng/contextmenu';
-import { MenuItem, SortEvent } from 'primeng/api';
-import { Menu, MenuModule } from 'primeng/menu';
-import { ButtonModule } from 'primeng/button';
+import {CommonModule} from '@angular/common';
+import {Component, input, output, signal, viewChild,} from '@angular/core';
+import {TableModule} from 'primeng/table';
+import {ActivityViewModel} from '../../services/api-service';
+import {ContextMenuModule} from 'primeng/contextmenu';
+import {MenuItem} from 'primeng/api';
+import {Menu, MenuModule} from 'primeng/menu';
+import {ButtonModule} from 'primeng/button';
 
 @Component({
   selector: 'app-activity-grid',
@@ -52,7 +42,8 @@ export class ActivityGrid {
     this.selectedActivity.set(undefined);
   }
 
-  public onMenuShow(activity: ActivityViewModel): void {
+  public onMenuShow(activity: any): void {
+    console.log(activity);
     this.hideContextMenu.set(true);
     this.selectedActivity.set(activity);
   }
@@ -79,6 +70,7 @@ export class ActivityGrid {
   }
 
   private deleteActivity(): void {
+    console.log(this.selectedActivity()?.activityId)
     if (this.selectedActivity()?.activityId)
       this.onDeleteActivity.emit(this.selectedActivity()?.activityId!);
   }

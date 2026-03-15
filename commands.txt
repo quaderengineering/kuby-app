@@ -1,3 +1,8 @@
 ng b => build angular app
+
+dotnet ef migrations add ActivityDefaultValue --project Infrastructure.Kuby --startup-project API.Kuby -o Data\Migrations -v => add Migration
+dotnet ef database update --project Infrastructure.Kuby --startup-project API.Kuby -v => update migration to DB
+
 dotnet publish -c Release -r win-x64 --self-contained true -o ./publish => publish backend
+
 npm run dist => package into electron app

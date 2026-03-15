@@ -41,17 +41,17 @@
 </div>
 @if ((activities$ | async); as activities) {
 
-<!-- @switch (currentView()) {
-      @case ('day') { -->
-<!--<app-day-view [activities]="activities" [selectedDate]="date$.value" />-->
-<!-- } -->
-<!-- @case ('week') { -->
-<!--<app-week-view [activities]="activities" [selectedDate]="date$.value" />-->
-<!-- }
-      @case ('month') { -->
- <app-month-view [activities]="activities" [selectedDate]="date$.value"></app-month-view>
-<!-- }
-    } -->
+  @switch (selectedDateRangeMode()) {
+    @case (DateRangeMode.DAY) {
+      <app-day-view [activities]="activities" [selectedDate]="date$.value" />
+    }
+    @case (DateRangeMode.WEEK) {
+      <app-week-view [activities]="activities" [selectedDate]="date$.value" />
+    }
+    @case (DateRangeMode.MONTH) {
+      <app-month-view [activities]="activities" [selectedDate]="date$.value"></app-month-view>
+    }
+  }
 
 <!-- <div class="table-wrapper">
   <p-table

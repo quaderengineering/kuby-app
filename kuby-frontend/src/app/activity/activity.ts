@@ -1,18 +1,18 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { TableModule } from 'primeng/table';
-import { ActivityClient, ActivityModel, ActivityViewModel } from '../services/api-service';
-import { DatePickerModule } from 'primeng/datepicker';
-import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { combineLatest, filter, finalize, map, Observable, switchMap, tap } from 'rxjs';
-import { CommonModule } from '@angular/common';
-import { SplitterModule } from 'primeng/splitter';
-import { ActivityGrid } from './activity-grid/activity-grid';
-import { Ripple } from 'primeng/ripple';
-import { SelectModule } from 'primeng/select';
-import { StateModel } from './activity.models';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { ActivityEditor } from './activity-editor/activity-editor';
+import {Component, DestroyRef, inject, signal} from '@angular/core';
+import {TableModule} from 'primeng/table';
+import {ActivityClient, ActivityModel, ActivityViewModel} from '../services/api-service';
+import {DatePickerModule} from 'primeng/datepicker';
+import {FormsModule} from '@angular/forms';
+import {ButtonModule} from 'primeng/button';
+import {combineLatest, Observable, switchMap} from 'rxjs';
+import {CommonModule} from '@angular/common';
+import {SplitterModule} from 'primeng/splitter';
+import {ActivityGrid} from './activity-grid/activity-grid';
+import {Ripple} from 'primeng/ripple';
+import {SelectModule} from 'primeng/select';
+import {StateModel} from './activity.models';
+import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
+import {ActivityEditor} from './activity-editor/activity-editor';
 
 @Component({
   selector: 'app-activity',
@@ -47,7 +47,7 @@ export class Activity {
 
   protected readonly selectedState = signal<StateModel>(this.states[0]);
 
-  private readonly reloadData = signal(false);
+  private readonly reloadData = signal(0);
 
   private readonly activityService = inject(ActivityClient);
   private readonly destroyRef = inject(DestroyRef);
@@ -58,7 +58,6 @@ export class Activity {
       toObservable(this.reloadData),
     ]).pipe(
       takeUntilDestroyed(this.destroyRef),
-      finalize(() => this.reloadData.set(false)),
       switchMap(([state, _]) => this.activityService.search(state.value))
     );
   }
@@ -91,7 +90,7 @@ export class Activity {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.reloadData.set(true);
+          this.reloadData.update(value => value + 1);
           this.onClose();
         },
         error: (error) => console.error(error),
@@ -102,7 +101,7 @@ export class Activity {
     this.activityService
       .activitiesDelete(activityId)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({ next: () => this.reloadData.set(true), error: (error) => console.error(error) });
+      .subscribe({ next: () => this.reloadData.update(value => value + 1), error: (error) => console.error(error) });
   }
 
   private getDefaultDateFrom(year?: number, month?: number): Date {

@@ -29,6 +29,8 @@ import {
 import {SelectModule} from 'primeng/select';
 import {MonthView} from './month-view/month-view';
 import {SelectButton} from 'primeng/selectbutton';
+import {WeekView} from './week-view/week-view';
+import {DayView} from './day-view/day-view';
 
 @Component({
   selector: 'app-dashboard',
@@ -44,6 +46,8 @@ import {SelectButton} from 'primeng/selectbutton';
     SelectModule,
     MonthView,
     SelectButton,
+    WeekView,
+    DayView,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -62,7 +66,8 @@ export class Dashboard implements OnInit {
   public readonly selectedDateRangeMode = signal<DateRangeMode>(DateRangeMode.WEEK);
   public readonly viewForDatePicker = computed(() => this.selectedDateRangeMode() === DateRangeMode.MONTH ? "month" : "date");
 
-  protected timeZones = Intl.supportedValuesOf('timeZone');
+  protected readonly DateRangeMode = DateRangeMode;
+  protected readonly timeZones = Intl.supportedValuesOf('timeZone');
 
   private searchCriteria = new BehaviorSubject<ActivityTimeEntrySearchModel>({
     dateFrom: this.getDefaultDateFrom(),
@@ -271,4 +276,5 @@ export class Dashboard implements OnInit {
     date = new Date(date.getTime() - offset * 60 * 1000);
     return date.toISOString().split('T')[0];
   }
+
 }
