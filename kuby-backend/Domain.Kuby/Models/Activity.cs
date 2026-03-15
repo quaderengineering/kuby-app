@@ -12,6 +12,8 @@ public class Activity
 
     public bool IsActive { get; set; }
 
+    public bool IsCreatedBySystem { get; set; } = false;
+
     public ICollection<TimeEntry> TimeEntry { get; set; } = new List<TimeEntry>();
 
     [NotMapped]
