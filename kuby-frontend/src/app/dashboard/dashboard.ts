@@ -75,9 +75,30 @@ export class Dashboard implements OnInit {
     );
   }
 
-  public onChangeMonth(value: number): void {
-    const date = this.date$.value;
-    this.onDateChange(new Date(date.setMonth(date.getMonth() + value)));
+  public onMoveDateBackward(): void {
+    switch(this.selectedDateRangeMode()) {
+      case DateRangeMode.DAY:
+        this.changeDay(-1);
+        break;
+      case DateRangeMode.WEEK:
+        this.moveOneWeekBackward();
+        break;
+      case DateRangeMode.MONTH:
+        this.changeMonth(1);
+    }
+  }
+
+  public onMoveDateForward(): void {
+    switch(this.selectedDateRangeMode()) {
+      case DateRangeMode.DAY:
+        this.changeDay(1);
+        break;
+      case DateRangeMode.WEEK:
+        this.moveOneWeekForward();
+        break;
+      case DateRangeMode.MONTH:
+        this.changeMonth(1);
+    }
   }
 
   public onChangeDateToToday(): void {
@@ -90,6 +111,36 @@ export class Dashboard implements OnInit {
       dateTo: this.getDefaultDateTo(date.getFullYear(), date.getMonth()),
     });
     this.date$.next(date);
+  }
+
+  getDateFormat(): string {
+    switch(this.selectedDateRangeMode()) {
+      case DateRangeMode.DAY:
+      case DateRangeMode.WEEK:
+        return 'dd. MM yy';
+      case DateRangeMode.MONTH:
+        return 'MM yy';
+      default:
+        return 'dd.MM yy';
+    }
+  }
+
+  private changeDay(value: number): void {
+    const date = this.date$.value;
+    this.onDateChange(new Date(date.setDate(date.getDate() + value)));
+  }
+
+  private moveOneWeekBackward(): void {
+    this.changeDay(-7);
+  }
+
+  private moveOneWeekForward(): void {
+    this.changeDay(7);
+  }
+
+  private changeMonth(value: number): void {
+    const date = this.date$.value;
+    this.onDateChange(new Date(date.setMonth(date.getMonth() + value)));
   }
 
   private getDateRanges(): DateRange[] {
