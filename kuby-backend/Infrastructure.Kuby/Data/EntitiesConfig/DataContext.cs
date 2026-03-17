@@ -14,12 +14,10 @@ public class DataContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        var pauseActivityId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-
         modelBuilder.Entity<Activity>().HasData(
            new Activity
            {
-               ActivityId = pauseActivityId,
+               ActivityId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                Label = "Pause",
                IsActive = true,
                IsCreatedBySystem = true,

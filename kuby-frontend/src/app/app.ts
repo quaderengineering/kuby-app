@@ -1,19 +1,22 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {ButtonModule} from 'primeng/button';
 import {MenubarModule} from 'primeng/menubar';
 import {MenuItem} from 'primeng/api';
+import {CubeDataDialog} from './cube-data-dialog/cube-data-dialog';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule, ButtonModule, MenubarModule],
+  imports: [RouterOutlet, CommonModule, ButtonModule, MenubarModule, CubeDataDialog],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
 
   public items: MenuItem[] | undefined;
+
+  public isModalOpen = signal(false);
 
   public ngOnInit(): void {
     this.items = [
@@ -29,6 +32,13 @@ export class App implements OnInit {
     // (window as any).electron?.receive('usb-data-response', (data: any) => {
     //   console.log('USB data:', data);
     // });
+  }
+
+  public openModal(): void {
+    this.isModalOpen.set(true);
+  }
+  public closeModal(): void {
+    this.isModalOpen.set(false);
   }
 
   public testIpc() {

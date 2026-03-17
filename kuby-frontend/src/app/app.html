@@ -1,3 +1,16 @@
-<p-menubar [model]="items"></p-menubar>
+<p-menubar [model]="items">
+<!--  FIXME: just for show purposes-->
+  <ng-template #end>
+    <p-button
+      (click)="openModal()"
+      label="Daten auslesen"
+      severity="secondary"
+    />
+  </ng-template>
+</p-menubar>
 
 <router-outlet />
+
+@if (isModalOpen()) {
+<app-cube-data-dialog (modalClosed)="closeModal()"></app-cube-data-dialog>
+}
