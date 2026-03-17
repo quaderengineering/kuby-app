@@ -3,11 +3,11 @@
     <div class="day-summary">
       <h3>Gesamt: {{ viewModel.totalDuration }}</h3>
     </div>
-    
+
     <p-table
       [value]="viewModel.activities"
       dataKey="activityId"
-      groupRowsBy="activityName"
+      groupRowsBy="activityId"
       rowGroupMode="subheader"
     >
       <ng-template #header>
@@ -23,15 +23,15 @@
       <ng-template #groupheader let-activity let-expanded="expanded">
         <tr>
           <td colspan="3">
-            <button
-              [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-              [pRowToggler]="activity"
-              pButton
-              pRipple
-              rounded
-              text
-              type="button"
-            ></button>
+<!--            <button-->
+<!--              [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"-->
+<!--              [pRowToggler]="activity"-->
+<!--              pButton-->
+<!--              pRipple-->
+<!--              rounded-->
+<!--              text-->
+<!--              type="button"-->
+<!--            ></button>-->
             <span [style.background-color]="activity.color" class="color-dot"></span>
             <strong>{{ activity.activityName }}</strong>
           </td>
@@ -42,7 +42,7 @@
         </tr>
       </ng-template>
 
-      <ng-template #expandedrow let-activity>
+      <ng-template #body let-activity>
         @for (entry of activity.timeEntries; track entry.timeEntryId) {
           <tr>
             <td></td>
